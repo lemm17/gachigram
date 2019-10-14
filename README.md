@@ -21,7 +21,6 @@
 1. **@self_data** - Список данных пользователя, обладает следущими полями:
     * login
     * description
-    * password
     * avatar
     * phone_number
     * subscribers - список подписчков
