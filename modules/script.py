@@ -1,5 +1,6 @@
 import sqlite3
 from propertyMixins import *
+import random
 
 
 class ValidationError(Exception):
@@ -123,6 +124,9 @@ class DemoUser(DemoUserMixin, BasicModel):
             'avatar': 'ava_{0}.png'.format(user_login)
         }
 
+    def __str__(self):
+        return "Object DemoUser\nlogin = {0}".format(self.login)
+
 
 class Settings(SettingsMixin, BasicModel):
     _FIELDS_MAPPING = {
@@ -136,9 +140,73 @@ class Settings(SettingsMixin, BasicModel):
     def _get_by_pk_mock(cls, user_login):
         return {
             'bg_theme': 'bg_theme_{0}.png'.format(user_login),
-            'opportunity_to_comment': True,
+            'opportunity_to_comment': False,
             'email_alerts': True
         }
+
+    def reset(self):
+        self.bg_theme = None
+        self.opportunity_to_comment = False
+        self.email_alerts = True
+
+
+class Comment(DemoUserMixin, BasicModel):
+    _FIELDS_MAPPING = {
+        'login': str,
+        'avatar': str,
+        'ref': str,
+        'comment': str
+    }
+
+    def __init__(self, demo_user, comment_text):
+        """
+        :param
+            demo_user (DemoUser): Экземляр класса DemoUser
+            comment_text (str): Текст комментария
+        """
+        for (key, value) in demo_user.__dict__.items():
+            setattr(self, key, value)
+        self.comment = comment_text
+
+    def __str__(self):
+        return "Комментарий пользователя {0}:\n-{1}".format(self.login, self.comment)
+
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, value):
+        if type(value) == str and len(value) < 501:
+            self._comment = value
+
+
+class Publication(PublicationMixin, BasicModel):
+    _FIELDS_MAPPING = {
+        'login': str,
+        'id': int,
+        'content': str,
+        'likes': list,
+        'dislikes': list,
+        'comments': list,
+    }
+    _TABLE = 'publications'
+
+    @classmethod
+    def _get_by_pk_mock(cls, user_login):
+        return {
+            'login': user_login,
+            'id': random.randint(0, 1000),
+            'content': 'content_{0}.jpg'.format(user_login),
+            'likes': [DemoUser.get_by_pk('userLogin{0}'.format(i)) for i in range(2, 8)],
+            'dislikes': [DemoUser.get_by_pk('userLogin{0}'.format(i)) for i in range(2, 4)],
+            'comments': [Comment(DemoUser.get_by_pk('userLogin{0}'.format(i)), "Текст") for i in range(2, 10)],
+        }
+
+    def add_comment(self, user_login, comment_text):
+        self.comments.append(Comment(user_login, comment_text))
+
+    #TODO: Реализовать функцию удаления комментария по логину
 
 
 class UserData(UserDataMixin, DemoUser):
@@ -163,9 +231,12 @@ class UserData(UserDataMixin, DemoUser):
         return {
             'login': user_login,
             'avatar': 'ava_{0}.png'.format(user_login),
-            'subscribers': [],
-            'subscriptions': [],
-            'publications': [],
+            # 18 подпсичиков
+            'subscribers': [DemoUser.get_by_pk('userLogin{0}'.format(i)) for i in range(2, 20)],
+            # 20 подписок
+            'subscriptions': [DemoUser.get_by_pk('userLogin{0}'.format(i)) for i in range(20, 40)],
+            # 5 публикаций
+            'publications': [Publication.get_by_pk(user_login) for i in range(5)],
             'like_data': [],
             'dislike_data': [],
             'settings': Settings.get_by_pk(user_login),
@@ -173,8 +244,23 @@ class UserData(UserDataMixin, DemoUser):
             'comments_data': [],
             'registration_date': '10.10.2019'
         }
+# a = DemoUser.get_by_pk('userLogin1')
+# print(a.__dict__)
+# print(a.to_dict())
 
 
-a = DemoUser.get_by_pk('userLogin1')
-print(a.__dict__)
-print(a.to_dict())
+def test_publication():
+    demo_user = DemoUser.get_by_pk('userLogin1')
+    a = Publication.get_by_pk(demo_user.login)
+    print(a.__dict__)
+    for elem in a.comments:
+        print(elem)
+    a.add_comment(demo_user, 'Я добавил 1 коммент')
+    print('---------------------------------------')
+    print(a.comments[-1])
+
+
+if __name__ == '__main__':
+    test_publication()
+
+

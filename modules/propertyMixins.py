@@ -100,7 +100,7 @@ class UserDataMixin:
 
     @property
     def registration_date(self):
-        return self.registration_date
+        return self._registration_date
 
     @registration_date.setter
     def registration_date(self, value):
@@ -131,3 +131,53 @@ class SettingsMixin:
     @email_alerts.setter
     def email_alerts(self, value):
         self._email_alerts = not self._email_alerts
+
+
+class PublicationMixin:
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        pass
+
+    @property
+    def content(self):
+        return self._content
+
+    @content.setter
+    def content(self, value):
+        pass
+
+    @property
+    def likes(self):
+        return self._likes
+
+    @likes.setter
+    def likes(self, value):
+        pass
+
+    @property
+    def likes(self):
+        return self._likes
+
+    @likes.setter
+    def likes(self, value):
+        pass
+
+    @property
+    def dislikes(self):
+        return self._dislikes
+
+    @dislikes.setter
+    def dislikes(self, value):
+        pass
+
+    @property
+    def comments(self):
+        return self._comments
+
+    @comments.setter
+    def comments(self, value):
+        pass
