@@ -135,6 +135,14 @@ class SettingsMixin:
 
 class PublicationMixin:
     @property
+    def login(self):
+        return self._login
+
+    @login.setter
+    def login(self, value):
+        pass
+
+    @property
     def id(self):
         return self._id
 
@@ -181,3 +189,42 @@ class PublicationMixin:
     @comments.setter
     def comments(self, value):
         pass
+
+    @property
+    def self_like(self):
+        return self._self_like
+
+    @self_like.setter
+    def self_like(self, value):
+        """
+            Если стоит дизлайк, отключаем его и ставим лайк
+            или если стоит лайк, отключаем его
+            иначе просто ставим лайк
+        """
+        if self._self_dislike:
+            self._self_dislike = False
+
+            self._self_like = True
+        elif self._self_like:
+            self._self_like = False
+        else:
+            self._self_like = True
+
+    @property
+    def self_dislike(self):
+        return self._self_dislike
+
+    @self_dislike.setter
+    def self_dislike(self, value):
+        """
+            Если стоит лайк, отключаем его и ставим дизлайк
+            или если стоит дизлайк, отключаем его
+            иначе просто ставим дизлайк
+        """
+        if self._self_like:
+            self._self_like = False
+            self._self_dislike = True
+        elif self._self_dislike:
+            self._self_dislike = False
+        else:
+            self._self_dislike = True
