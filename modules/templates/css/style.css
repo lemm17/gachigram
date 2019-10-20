@@ -1,0 +1,53 @@
+/* main */
+body {
+    font-family: "Proxima Nova Rg", sans-serif;
+    font-style: normal;
+    color: #2c2c2c;
+}
+a {
+    color: #000 !important;
+    text-decoration: none
+}
+a:visited { text-decoration: none; }
+a:active { text-decoration: none; }
+a:hover { text-decoration: none; }
+.nums {
+    font-weight: bold;
+}
+
+/* header */
+.header {
+    background-color: #f1f1f1;
+    border-bottom: 1px solid #2c2c2c;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.logo__logo {
+    height: 50px;
+}
+.logo__search {
+    height: 30px;
+}
+.logo__profile {
+    height: 30px;
+}
+
+/* content */
+.content {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+.avatar {
+    width: 100%;
+    border: 2px gray solid;
+    border-radius: 50%;
+}
+.container_border {
+    padding-bottom: 30px;
+    border-bottom: 1px solid #2c2c2c;
+}
+
+/* photos */
+.photos__format {
+    width: 100%;
+}
