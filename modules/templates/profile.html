@@ -2,10 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Gachigram | Профиль</title>
+    <title>Gachigram | Профиль</title>  
     <link rel="stylesheet" href="fonts/ProximaNova/ProximaNova.css">
 </head>
 <body>
@@ -16,7 +16,10 @@
                     <a href="#"><img src="icons/logo.svg" class="logo__logo"></a>
                 </div>
                 <div class="col-xl-4 ml-auto">
-                    <a href="#">Tut budet poisk: <img src="icons/search.svg" class="logo__search"></a>
+                    <form>
+                        <button class="button_search" type="submit"></button>
+                        <input class="header__search" type="text" placeholder="Искать здесь...">
+                    </form>
                 </div>
                 <div class="col-xl-1 ml-12">
                     <a href="#"><img src="icons/profile.svg" class="logo__profile"></a>
@@ -31,11 +34,13 @@
                     <img src="icons/avatar.png" class="avatar">
                 </div>
                 <div class="col-xl-6">
-                    Привет, меня зовут NAME. Здесь находится строки о мне! Это описание занимает 100 символов (4 строки максимум)
+                    <div class="content_description">
+                        Привет, меня зовут NAME. Здесь находится строки о мне! Это описание занимает 100 символов (4 строки максимум)
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-xl-3">
+            <div class="row status_bar">
+                <div class="offset-xl-2 col-xl-3">
                     <a href="#"><span class="nums">3</span> публикаций</a>
                 </div>
                 <div class="col-xl-3">
