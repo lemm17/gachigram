@@ -1,10 +1,10 @@
-import sqlite3
 from basicModels import *
 from Publication import *
 from Setting import *
 from Notification import *
 from UserData import *
 from datetime import datetime
+from UserData import *
 
 
 class SelfData(BasicModel):
@@ -38,7 +38,7 @@ class SelfData(BasicModel):
                 """.format(self._id))]
 
     def update_dislikes(self):
-        self._dislikes =  [i[0] for i in self.query("""
+        self._dislikes = [i[0] for i in self.query("""
                     SELECT id_publication FROM dislikes
                     WHERE id_user = {0}
                 """.format(self._id))]
@@ -120,7 +120,6 @@ class SelfData(BasicModel):
         # Получаем все уведомления пользователя в какую-нибудь переменную
         self.update_notifications()
 
-
     @classmethod
     def get_subscribers(cls, self_id):
         """
@@ -154,7 +153,7 @@ class SelfData(BasicModel):
     def subscribe(self, id_obj_subscription):
         """
             Позволяет подписаться на кого-то и отправить уведомление
-        :param id_obj_subscriptions: id объекта подписки
+        :param id_obj_subscription: id объекта подписки
         """
         if self._id != id_obj_subscription and id_obj_subscription not in self._subscriptions.keys():
             self.query("""
@@ -335,33 +334,32 @@ class SelfData(BasicModel):
             """.format(self._id, id_publication))
 
 
-
 if __name__ == '__main__':
     # Тест
-    user1 = SelfData(4)
-    # print(user1._subscribers)
-    # print(user1._subscriptions)
-    # print(user1._likes)
-    # print(user1._dislikes)
-    # print(user1._publications)
-    # print(user1._likes)
-    # print(user1._dislikes)
-    # user1.set_like(2)
-    # print(user1._likes)
-    # print(user1._dislikes)
-    # user1.delete_publication(1)
+    mainUser = SelfData(1)
+    user4 = UserData(4)
+
+    # Проверка подписок
+    # user2.subscribe(mainUser._id)
+    # user2.unsubscribe(mainUser._id)
 
     # Проверка комментариев
-    # print(user1._publications)
-    # print(user1._comments)
-    # user1.comment(0, 'Оставил новый коммент')
-    # print(user1._comments)
-    # user1.delete_self_comment(0, 5)
-    # print(user1._comments)
+    user4.comment(mainUser._id, 1, 'Комментарий пользователя 1')
+    print(user4._publications[1].get_comments())
+    user4.delete_comment(6, 1, mainUser._id)
+    print(user4._publications[1].get_comments())
+
+    # Проверка комментариев
+    # print(mainUser._publications)
+    # print(mainUser._comments)
+    # mainUser.comment(0, 'Оставил новый коммент')
+    # print(mainUser._comments)
+    # mainUser.delete_self_comment(0, 5)
+    # print(mainUser._comments)
 
     # Проверка уведомлений
-    # print(user1.get_note_read_notifications())
-    # user1.read_all_notifications()
-    # print(user1.get_note_read_notifications())
-    # user1.set_like(3)
-    # user1.subscribe(2)
+    # print(mainUser.get_note_read_notifications())
+    # mainUser.read_all_notifications()
+    # print(mainUser.get_note_read_notifications())
+    # mainUser.set_like(3)
+    # mainUser.subscribe(2)
