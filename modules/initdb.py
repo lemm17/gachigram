@@ -1,5 +1,6 @@
 import sqlite3
 import random
+from datetime import datetime
 
 TABLES = ['users', 'publications', 'subscriptions', 'settings', 'likes',
           'dislikes', 'comments', 'notifications']
@@ -11,52 +12,58 @@ def init_db():
     """
     conn = sqlite3.connect('db.db')
     cursor = conn.cursor()
+    cursor.execute("""PRAGMA foreign_keys = ON""")
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users
-        (id INTEGER, login TEXT, description TEXT, avatar TEXT, email TEXT,
-        phone_number TEXT, password TEXT, registration_date TEXT,
+        (id INTEGER NOT NULL, login TEXT NOT NULL, description TEXT, avatar TEXT, email TEXT,
+        phone_number TEXT NOT NULL, password TEXT NOT NULL, registration_date TEXT NOT NULL,
         PRIMARY KEY (id))
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS publications
-        (id INTEGER, content TEXT, description TEXT, id_user INTEGER,
+        (id INTEGER NOT NULL, content TEXT NOT NULL, description TEXT, id_user INTEGER NOT NULL, time TEXT NOT NULL,
         PRIMARY KEY (id),
         FOREIGN KEY (id_user) REFERENCES users(id))
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS subscriptions
-        (id_subscriber INTEGER, id_obj_subscription INTEGER,
-        FOREIGN KEY (id_subscriber) REFERENCES users(id) 
-        FOREIGN KEY (id_obj_subscription) REFERENCES users(id))
+        (id_subscriber INTEGER NOT NULL, id_obj_subscription INTEGER NOT NULL,
+        FOREIGN KEY (id_subscriber) REFERENCES users(id) ON DELETE CASCADE
+        FOREIGN KEY (id_obj_subscription) REFERENCES users(id) ON DELETE CASCADE)
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS settings
-        (id_user INTEGER, bg_theme TEXT, op_to_com INTEGER, email_alerts INTEGER,
-        FOREIGN KEY (id_user) REFERENCES users(id))
+        (id_user INTEGER NOT NULL, bg_theme TEXT, op_to_com INTEGER NOT NULL, email_alerts INTEGER NOT NULL,
+        FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE)
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS likes
-        (id_publication INTEGER, id_user INTEGER,
-        FOREIGN KEY (id_publication) REFERENCES publications(id) 
-        FOREIGN KEY (id_user) REFERENCES users(id))
+        (id_publication INTEGER NOT NULL, id_user INTEGER NOT NULL,
+        FOREIGN KEY (id_publication) REFERENCES publications(id) ON DELETE CASCADE
+        FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE)
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS dislikes
-        (id_publication INTEGER, id_user INTEGER,
-        FOREIGN KEY (id_publication) REFERENCES publications(id) 
-        FOREIGN KEY (id_user) REFERENCES users(id))
+        (id_publication INTEGER NOT NULL, id_user INTEGER NOT NULL,
+        FOREIGN KEY (id_publication) REFERENCES publications(id) ON DELETE CASCADE
+        FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE)
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS comments
-        (id_publication INTEGER, id_user INTEGER, text TEXT,
-        FOREIGN KEY (id_publication) REFERENCES publications(id) 
-        FOREIGN KEY (id_user) REFERENCES users(id))
+        (id INTEGER NOT NULL, id_publication INTEGER NOT NULL, id_user INTEGER NOT NULL, comment_text TEXT,
+        comment_time TEXT NOT NULL,
+        PRIMARY KEY (id),
+        FOREIGN KEY (id_publication) REFERENCES publications(id) ON DELETE CASCADE 
+        FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE)
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS notifications
-        (type TEXT, time TEXT, id_user INTEGER, id_publication INTEGER,
-        FOREIGN KEY (id_user) REFERENCES users(id)
-        FOREIGN KEY (id_publication) REFERENCES publications(id))
+        (id INTEGER NOT NULL, id_obj_notification INTEGER NOT NULL, type TEXT NOT NULL, time TEXT NOT NULL,
+        id_user INTEGER NOT NULL, id_publication INTEGER, is_read INTEGER NOT NULL,
+        PRIMARY KEY (id),
+        FOREIGN KEY (id_obj_notification) REFERENCES users(id) ON DELETE CASCADE 
+        FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE 
+        FOREIGN KEY (id_publication) REFERENCES publications(id) ON DELETE CASCADE )
     """)
     conn.commit()
     conn.close()
@@ -95,13 +102,15 @@ def insert_test_data():
         VALUES (?, ?, ?, ?)
     """, settings)
 
+    # YYYY-MM-DD
     # Заполняем таблицу публикаций (сделаем 5 публикаций)
     publications = [('{0}'.format(i), '../publications/content{0}'.format(i),
-                     'Описание публикации {0}'.format(i), random.randint(0, 5))
+                     'Описание публикации {0}'.format(i), random.randint(0, 5),
+                     datetime.strftime(datetime.now(), "%Y-%m-%d"))
                     for i in range(5)]
     cursor.executemany("""
             INSERT INTO publications
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?)
         """, publications)
 
     # Пусть каждый пользователь поставит лайк на рандомную публикацию
@@ -112,13 +121,15 @@ def insert_test_data():
             """, likes)
     # Предположим, что дизлайки никто не ставил
 
+    # YYYY-MM-DD HH:MM
     # Пусть каждый пользователь оставит комментарий на рандомную публикацию
-    comments = [(random.randint(0, 5),
-                i, 'Комментарий пользователя {0}'.format(i)) for i in range(5)]
+    comments = [(i, random.randint(0, 5),
+                i, 'Комментарий пользователя {0}'.format(i),
+                datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")) for i in range(5)]
 
     cursor.executemany("""
                     INSERT INTO comments
-                    VALUES (?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?)
                 """, comments)
     # Уведомления пока не будем записывать
     conn.commit()
@@ -131,6 +142,8 @@ def clear_table(table):
     cursor.execute("""
         DELETE FROM {0}
     """.format(table))
+    conn.commit()
+    conn.close()
 
 
 def clear_all_table():
@@ -139,9 +152,5 @@ def clear_all_table():
 
 
 if __name__ == "__main__":
-    conn = sqlite3.connect('db.db')
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT login, avatar FROM users WHERE id = 1
-    """)
-    print(cur.fetchall())
+    init_db()
+    insert_test_data()
