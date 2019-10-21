@@ -27,6 +27,9 @@ a:hover { text-decoration: none; }
     border-bottom: 1px solid #2c2c2c;
     padding-top: 10px;
     padding-bottom: 10px;
+    position: fixed;
+    width: 100%;
+    z-index: 10;
 }
 .logo__logo {
     height: 50px;
@@ -72,7 +75,7 @@ a:hover { text-decoration: none; }
 
 /* content */
 .content {
-    padding-top: 30px;
+    padding-top: 90px;
     padding-bottom: 30px;
 }
 .avatar {
@@ -94,4 +97,11 @@ a:hover { text-decoration: none; }
 /* photos */
 .photos__format {
     width: 100%;
+}
+
+/* footer */
+.footer_settings {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
 }
