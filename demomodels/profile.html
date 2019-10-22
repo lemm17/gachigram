@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Gachigram | Профиль</title>
+    <link rel="stylesheet" href="fonts/ProximaNova/ProximaNova.css">
+</head>
+<body>
+    <header class="header header_fixed">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-3">
+                    <a href="#"><img src="icons/logo.svg" class="logo__logo"></a>
+                </div>
+                <div class="col-xl-4 ml-auto">
+                    <form>
+                        <button class="button__search" type="submit"></button>
+                        <input class="header__search" type="text" placeholder="Искать здесь...">
+                    </form>
+                </div>
+                <div class="col-xl-1 ml-11">
+                    <a href="#"><img src="icons/profile.svg" class="logo__profile"></a>
+                </div>
+                <div class="col-xl-1 ml-12">
+                    <a href="#openSettings"><img src="icons/settings.svg" class="logo__settings"></a>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section class="content">
+        <div class="container container_border">
+            <div class="row">
+                <div class="col-xl-3 ml-2">
+                    <img src="icons/avatar.png" class="avatar">
+                </div>
+                <div class="col-xl-6">
+                    <div class="content_description">
+                        Привет, меня зовут NAME. Здесь находится строки о мне! Это описание занимает 100 символов (4 строки максимум)
+                    </div>
+                </div>
+            </div>
+            <div class="row status_bar">
+                <div class="offset-xl-2 col-xl-3">
+                    <a href="#"><span class="_bold">3</span> публикаций</a>
+                </div>
+                <div class="col-xl-3">
+                    <a href="#"><span class="_bold">362</span> подписчиков</a>
+                </div>
+                <div class="col-xl-3">
+                    <a href="#">Подписки: <span class="_bold">47</span></a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="photos">
+        <div class="container container_border">
+            <div class="row">
+                <div class="col-xl-4">
+                    <a href="#openPhoto"><img src="icons/photo1.png" class="photos__format"></a>
+                </div>
+                <div class="col-xl-4">
+                    <a href="#openPhoto"><img src="icons/photo2.jpg" class="photos__format"></a>
+                </div>
+                <div class="col-xl-4">
+                    <a href="#openPhoto"><img src="icons/photo3.jpg" class="photos__format"></a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <div class="row footer_settings">
+                <div class="col-xl-1 offset-xl-3">
+                    <a href="#">О нас</a>
+                </div>
+                <div class="col-xl-4">
+                    <a href="#">Политика конфеденциальности</a>
+                </div>
+                <div class="col-xl-1">
+                    <a href="#">API</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <section id="openPhoto" class="open-photo">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-7 open-photo-container">
+                    <a href="#"><img src="icons/photo2f.jpg" class="open-photo__photo"></a>
+                </div>
+                <div class="col-xl-4 comments">
+                    <div class="comments-comment">
+                        <a href="#">
+                            <div class="comment-nickname">
+                                <img src="icons/avatar1.jpg" class="avatar__format"><span class="_bold _text-padding">Van Darkholme</span><br>
+                            </div>
+                        </a>
+                        <div class="comments-text">
+                            Стареет внешность: яркие черты<br>
+                            Стирает время властно и жестоко,<br>
+                            Тогда как у духовной красоты<br>
+                            Нет ни морщин, ни возраста, ни срока.
+                        </div>
+                    </div>
+                    <div class="comments-comment">
+                        <a href="#">
+                            <div class="comment-nickname">
+                                <img src="icons/avatar2.jpg" class="avatar__format"><span class="_bold _text-padding">Billy Herrington</span><br>
+                            </div>
+                        </a>
+                        <div class="comments-text">
+                            Неважно какое у тебя лицо – важно, что оно выражает. Неважно какой у тебя голос – важно как дороги твои слова. Не имеет значения как ты говоришь – твои поступки говорят сами за себя.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-1">
+                    <div class="buttons-block">
+                        <a href="#"><img src="icons/exit.png" class="logo__exit"></a><br>
+                        <a href="#"><img src="icons/like.png" class="logo__like"></a><br>
+                        300
+                        <a href="#"><img src="icons/dislike.png" class="logo__dislike"></a><br>
+                        0
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="openSettings" class="open-settings">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-6 offset-xl-3 open-settings-menu">
+                    Тут должны быть настройки, но я не знаю что сюда запихать:<br>
+                    Настройка 1:<br>
+                    Настройка 2:<br>
+                    Настройка 3:<br>
+                </div>
+                <div class="col-xl-1">
+                    <div class="buttons-block">
+                        <a href="#"><img src="icons/exit.png" class="logo__exit"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="jquery/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
+</html>
