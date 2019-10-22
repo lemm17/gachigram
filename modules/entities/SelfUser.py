@@ -5,9 +5,10 @@ from Notification import *
 from UserData import *
 from datetime import datetime
 from UserData import *
+from propertyMixins import SelfUserMixin
 
 
-class SelfData(BasicModel):
+class SelfData(BasicModel, SelfUserMixin):
     _TABLE = 'users'
     _FIELDS_MAPPING = {
         'id': int,
@@ -336,18 +337,17 @@ class SelfData(BasicModel):
 
 if __name__ == '__main__':
     # Тест
-    mainUser = SelfData(1)
-    user4 = UserData(4)
+    mainUser = SelfData(2)
+    user4 = UserData(1)
 
     # Проверка подписок
     # user2.subscribe(mainUser._id)
     # user2.unsubscribe(mainUser._id)
 
     # Проверка комментариев
-    user4.comment(mainUser._id, 1, 'Комментарий пользователя 1')
-    print(user4._publications[1].get_comments())
-    user4.delete_comment(6, 1, mainUser._id)
-    print(user4._publications[1].get_comments())
+    print(user4.get_publication(3).get_comments())
+    user4.delete_comment(5, 3, mainUser.id)
+    print(user4.get_publication(3).get_comments())
 
     # Проверка комментариев
     # print(mainUser._publications)

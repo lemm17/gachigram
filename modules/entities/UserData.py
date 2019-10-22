@@ -2,9 +2,10 @@ from basicModels import *
 from Publication import *
 from Setting import *
 from datetime import datetime
+from propertyMixins import UserDataMixin
 
 
-class UserData(BasicModel):
+class UserData(BasicModel, UserDataMixin):
     _TABLE = 'users'
     _FIELDS_MAPPING = {
         'id': int,
@@ -123,6 +124,13 @@ class UserData(BasicModel):
 
     def delete_comment(self, id_comment, id_publication, id_sender):
         # Если публикация существует и в ней есть комментарий с id_comment'ом и этот комментарий принадлежит id_sender
-        if id_publication in self._publications.keys() and id_sender in self._publications[id_publication].get_comments().keys()\
-                and self._publications[id_publication].get_comments()[id_sender][0] == id_comment:
+        if id_publication in self._publications.keys() and id_comment in self._publications[id_publication]._comments.keys()\
+                and self._publications[id_publication]._comments[id_comment][0] == id_sender:
             self._publications[id_publication].delete_comment(id_comment)
+        else:
+            # Райс ошибки
+            pass
+
+    def get_publication(self, id_publication):
+        if id_publication in self._publications.keys():
+            return self._publications[id_publication]

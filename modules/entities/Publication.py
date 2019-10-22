@@ -1,7 +1,9 @@
 from basicModels import *
 from datetime import datetime
+from propertyMixins import PublicationMixin
 
-class Publication(BasicModel):
+
+class Publication(BasicModel, PublicationMixin):
     _TABLE = "publications"
 
     def __init__(self, id, content, description, id_user, time):
@@ -26,7 +28,7 @@ class Publication(BasicModel):
         result = {}
         if len(comments_data) > 0:
             for comment in comments_data:
-                result[comment[2]] = (comment[0], comment[3], comment[4])
+                result[comment[0]] = (comment[2], comment[3], comment[4])
         return result
 
     def comment(self, id_sender, text_comment):
@@ -41,10 +43,7 @@ class Publication(BasicModel):
         self._comments[id_sender] = (id_comment, text_comment, time)
 
     def delete_comment(self, id_comment):
-        for id_sender in self._comments.keys():
-            if self._comments[id_sender][0] == id_comment:
-                del self._comments[id_sender]
-                break
+        del self._comments[id_comment]
         self.query("""
             DELETE FROM comments
             WHERE id = {0}

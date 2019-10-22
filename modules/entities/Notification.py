@@ -1,7 +1,8 @@
 from basicModels import *
+from propertyMixins import NotificationMixin
 
 
-class Notification(BasicModel):
+class Notification(BasicModel, NotificationMixin):
     _TABLE = 'notifications'
     _FIELDS_MAPPING = {
         'type': str,

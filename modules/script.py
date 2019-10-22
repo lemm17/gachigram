@@ -2,6 +2,7 @@ import sqlite3
 from propertyMixins import *
 import random
 
+# СКРИПТ НЕ АКТУАЛЕН 22.10.2019
 
 class ValidationError(Exception):
     """Ошибка валидации"""
