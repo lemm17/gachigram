@@ -4,12 +4,6 @@ body {
     font-style: normal;
     color: #2c2c2c;
 }
-form {
-    position: relative;
-    width: 300px;
-    margin: 0 auto;
-    height: 42px;
-}
 a {
     color: #000 !important;
     text-decoration: none
@@ -28,6 +22,9 @@ a:hover { text-decoration: none; }
 }
 ._margin-top {
     margin-top: 10px;
+}
+._width100 {
+    width: 100%;
 }
 .logo__exit {
     height: 50px;
@@ -62,6 +59,12 @@ a:hover { text-decoration: none; }
     position: fixed;
     width: 100%;
     z-index: 5;
+}
+.header-form__search {
+    position: relative;
+    width: 300px;
+    margin: 0 auto;
+    height: 42px;
 }
 .logo__logo {
     height: 50px;
@@ -141,6 +144,9 @@ a:hover { text-decoration: none; }
 }
 
 /* footer */
+.footer {
+    margin-top: 100px;
+}
 .footer_settings {
     padding-top: 20px;
     padding-bottom: 20px;
@@ -233,4 +239,37 @@ a:hover { text-decoration: none; }
     border: 1px gray solid;
     border-radius: 50%;
 }
-
+/* login */
+.login__input-text {
+    border: none;
+    border-bottom: 2px solid gray;
+    padding: 3px 10px 3px 10px;
+    outline: none;
+    transition: .4s cubic-bezier(0, 0.8, 0, 1);
+    margin-top: 15px;
+}
+.login__input-text:focus {
+    border-bottom: 2px solid #2c2c2c;
+}
+.login-form {
+    text-align: center;
+}
+.login__button {
+    color: white;
+    outline: none;
+    text-decoration: none;
+    padding: 5px 15px 5px 15px;
+    border-radius: 5px;
+    background: gray;
+    box-shadow: 0 -2px #2c2c2c inset;
+    transition: 0.2s;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.login__button:hover {
+    opacity: 0.7;
+}
+.login__button:active {
+    opacity: 0.7;
+    box-shadow: none;
+}
