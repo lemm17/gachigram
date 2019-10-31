@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\dns\Desktop\Тензор Back-end\humanHealthStat\venv"
+VIRTUAL_ENV="C:\Users\dns\Desktop\gachigram\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
