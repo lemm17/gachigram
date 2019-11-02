@@ -4,4 +4,4 @@ from app.entities import *
 
 @app.shell_context_processor
 def make_shell_context():
-    return {'db': db, 'User': User, 'Publication': Publication, 'associate_subscriptions': associate_subscriptions}
+    return {'db': db, 'User': User, 'Publication': Publication, 'association_subscriptions': association_subscriptions}
