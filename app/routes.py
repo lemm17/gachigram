@@ -10,7 +10,7 @@ from werkzeug.urls import url_parse
 @app.route("/home")
 @login_required
 def home():
-    return render_template("profile.html")
+    return render_template("profile.html", user = current_user)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -51,3 +51,12 @@ def registration():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('registration.html', title='Register', form=form)
+
+@app.route("/id<prof_id>", methods=['GET', 'POST'])
+def check_profile(prof_id):
+    exists = db.session.query(User).filter_by(id=prof_id)
+    if exists.scalar() != None:
+        return render_template("profile.html", user = exists.first())
+    else:
+        return "Пользователь не найден"
+

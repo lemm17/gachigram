@@ -41,11 +41,15 @@
         <div class="container container_border">
             <div class="row">
                 <div class="col-xl-3 ml-2">
-                    <img src="/static/icons/avatar.png" class="avatar">
+                    <img src="{{user.avatar}}" class="avatar">
                 </div>
                 <div class="col-xl-6">
                     <div class="content_description">
-                        Привет, меня зовут NAME. Здесь находится строки о мне! Это описание занимает 100 символов (4 строки максимум)
+                        {% if user.description %}
+                        {{user.description}}
+                        {% else %}
+                        Привет, меня зовут {{user.login}}. Здесь находится строки о мне! Это описание занимает 100 символов (4 строки максимум)
+                        {% endif %}
                     </div>
                 </div>
             </div>
