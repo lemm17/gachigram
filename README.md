@@ -34,6 +34,7 @@
     * publications - список публикаций пользователя
     * settings - настройки профиля
     * notifications - список уведомлений
+    **Методы**
     * sub(self, user) - позволяет подписаться на user
     * show_subscriptions(self) - показывает подписки
     * show_subscribers(self) - показывает подписчиков
@@ -52,7 +53,6 @@
     * change_otc(self) - 
     * show_notification(self, **kwargs) - позволяет просмотреть уведомления
     * read_notification(self, id_notification = None) - позволяет прочитать уведомлени(е/я)
-    * repr(self) - выводит сущность 
     
 2. **Publication** - данные о публикации, обладает следующими полями:
     * id 
@@ -61,28 +61,30 @@
     * id_user 
     * likes - список пользователей, лайкнувших запись
     * dislikes - список пользователей, дизлайкнувших запись
-    * comments 
+    * comments
+    **Методы**
     * set_like(self, user) - поставить/убрать лайк user
     * set_dislike(self, user) - поставить/убрать дизлайк user
     * set_comment(self, user, text) - добавить комментарий user
     * show_likes(self) - показать все лайки
     * show_dislikes(self) - показать все дизлайки
     * show_comments(self) - показать все комментарии
-    * repr(self)
+    
 3. **Comment** - сущность коментария, содержащая:
     * id
     * id_publication
     * id_user
     * text - текст комментария
     * time - время создания комментария
-    * repr(self)
+    
 4. **Settings** - Сущность, описывающая все настройки профиля конкретного пользователя. Поля:
     * id_user
-    * op_to_com
+    * op_to_com - возможность запрета комментирования
     * email_alerts - возможность запрета email оповещений
+    **Методы**
     * email_alerts_change(self) - запрещает/разрешает email оповещения
     * op_to_com_change(self)
-    * repr(self)
+    
 5. **Notification** - сущность уведомления, содержащая:
     * id
     * type
@@ -91,4 +93,3 @@
     * text 
     * date - время создания
     * read - прочитано/непрочитано
-    * repr(self)
