@@ -7,3 +7,4 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'postgres://postgres:postgrepass@localhost:5432/gachibase'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    DEBUG = True

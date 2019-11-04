@@ -12,34 +12,48 @@
     <section class="register">
         <div class="container">
             <div class="row">
-                <div class="col-xl-3 offset-xl-3">
-                    <img src="/static/icons/register-logo.jpg" class="_width100">
-                </div>
-                <div class="col-xl-3 login-form">
-                    <form>
+                <div class="col-xl-4 offset-xl-4 login-form">
+                    <form action="" method="post" novalidate>
                         {{ form.hidden_tag() }}
                         <img src="/static/icons/logo.svg" class="_width100 _margin-top"><br>
                         Впервые у нас? Зарегестрируйтесь в самой лучшей социальной сети<br>
                         <p>
-                            {{ form.email(class="login__input-text", placeholder="Адрес эл. почты") }}
+                            {{ form.login.label }}<br>
+                            {{ form.login(class="login__input-text", placeholder="Имя пользователя") }}<br>
+                            {% for error in form.login.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
                         </p>
                         <p>
-                            {{ form.username(class="login__input-text", placeholder="Логин") }}
+                            {{ form.email.label }}<br>
+                            {{ form.email(class="login__input-text", placeholder="Email") }}<br>
+                            {% for error in form.email.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
                         </p>
                         <p>
-                            {{ form.last_name(class="login__input-text", placeholder="Фамилия") }}
+                            {{ form.password.label }}<br>
+                            {{ form.password(class="login__input-text", placeholder="Пароль") }}<br>
+                            {% for error in form.password.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
                         </p>
                         <p>
-                            {{ form.first_name(class="login__input-text", placeholder="Имя") }}
+                            {{ form.password2.label }}<br>
+                            {{ form.password2(class="login__input-text", placeholder="Повторите пароль") }}<br>
+                            {% for error in form.password2.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
                         </p>
                         <p>
-                            {{ form.password(class="login__input-text", placeholder="Пароль") }}
-                        </p>
-                        <p>
-                            {{ form.repeat_password(class="login__input-text", placeholder="Повторите пароль") }}
+                            {{ form.phone.label }}<br>
+                            {{ form.phone(class="login__input-text", placeholder="Номер телефона") }}<br>
+                            {% for error in form.password.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
                         </p>
                         <p>{{ form.submit() }}</p>
-                        Уже зарегестрированы? <a href="#">Войти</a>
+                        Уже зарегестрированы? <a href="{{url_for('login')}}">Войти</a>
                     </form>
                 </div>
             </div>

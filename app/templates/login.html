@@ -12,26 +12,28 @@
     <section class="register">
         <div class="container">
             <div class="row">
-                <div class="col-xl-3 offset-xl-3">
-                    <img src="/static/icons/register-logo.jpg" class="_width100">
-                </div>
-                <div class="col-xl-3 login-form">
+                <div class="col-xl-4 offset-xl-4 login-form">
                     <form action="" method="post" novalidate>
                         {{ form.hidden_tag() }}
-                        <img src="/static/icons/logo.svg" class="_width100 _margin-         top"><br>
+                        <img src="/static/icons/logo.svg" class="_width100 _margin-top"><br>
                         Fuckin slaves get your ass back here...<br>
                         <p>
-                            {{ form.username(class="login__input-text", placeholder="Адрес эл. почты") }}
+                            {{ form.login.label }}<br>
+                            {{ form.login(class="login__input-text", placeholder="Имя пользователя") }}
+                            {% for error in form.login.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
                         </p>
                         <p>
+                            {{ form.password.label }}<br>
                             {{ form.password(class="login__input-text", placeholder="Пароль") }}
+                            {% for error in form.password.errors %}
+                            <span style="color: red;">[{{ error }}]</span>
+                            {% endfor %}
                         </p>
                         <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
                         <p>{{ form.submit() }}</p>
-<!--                        <input type="email" class="login__input-text" placeholder="Адрес эл. почты"><br>-->
-<!--                        <input type="password" class="login__input-text" placeholder="Пароль"><br>-->
-<!--                        <input type="submit" value="Войти" class="login__button"><br>-->
-                        Еще не зарегестрированы? <a href="/registration">Регистрация</a>
+                        Еще не зарегестрированы? <a href="{{ url_for('registration') }}">Регистрация</a>
                     </form>
                 </div>
             </div>

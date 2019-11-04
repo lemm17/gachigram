@@ -1,6 +1,7 @@
-from app import db
+from app import db, login
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 association_subscriptions = db.Table('association_subscriptions',
                                      db.Column('subscriber_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
@@ -19,7 +20,7 @@ dislikes = db.Table('dislikes',
                     )
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(64), index=True, unique=True, nullable=False)
     avatar = db.Column(db.String(256), default='/static/avatars/ricardo.jpg')
@@ -293,3 +294,8 @@ class Notification(db.Model):
     def __repr__(self):
         return '<Notification {} with type {} for user {} ~ read = {}>'.format(self.id, self.type, self.id_user,
                                                                                 self.read)
+
+
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
