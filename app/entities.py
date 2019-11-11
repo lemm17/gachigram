@@ -23,7 +23,7 @@ dislikes = db.Table('dislikes',
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    avatar = db.Column(db.String(256), default='/static/avatars/ricardo.jpg')
+    avatar = db.Column(db.String(256), default='https://s3.eu-north-1.amazonaws.com/lemmycases.ru/avatars/ricardo.jpg')
     description = db.Column(db.Text)
     email = db.Column(db.String(128), index=True, unique=True, nullable=False)
     phone_number = db.Column(db.String(64), index=True, unique=True, nullable=False)
@@ -59,6 +59,15 @@ class User(UserMixin, db.Model):
         if not self.is_subscribed(user):
             self.subscriptions.append(user)
             db.session.add(Notification(type='subscription', id_user=user.id))
+
+    def count_subscriptions(self):
+        return len(self.subscriptions.all())
+
+    def count_subscribers(self):
+        return len(self.subscribers.all())
+
+    def count_publications(self):
+        return len(self.publications.all())
 
     def show_subscriptions(self):
         for user in self.subscriptions:

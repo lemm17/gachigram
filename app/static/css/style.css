@@ -329,3 +329,30 @@ a:hover { text-decoration: none; }
     color: white;
     text-decoration: none;
 }
+
+.settings-elem {
+    margin-bottom: 10px;
+}
+
+.settings_text {
+    text-align: center !important;
+}
+
+.btn-refresh {
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.btn-refresh:focus {
+    outline: none;
+}
+
+.btn-refresh img {
+    width: 25px !important;
+}
+
+.flex-row {
+    display: flex;
+}

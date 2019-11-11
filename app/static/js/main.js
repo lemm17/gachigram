@@ -1,3 +1,17 @@
+function change_settings(e, setting){
+    if (e.target.value == 'True'){
+        e.target.value = 'False';
+    } else {
+         e.target.value = 'True';
+    }
+
+    if (setting == 'ea'){
+        $.post('/settingea');
+    } else {
+        $.post('/settingotc');
+    }
+};
+
 $(document).ready(function() {
     let overlay = $('#overlay'),
     open_modal = $('.open_modal'),
@@ -24,3 +38,4 @@ $(document).ready(function() {
         });
     });
 });
+

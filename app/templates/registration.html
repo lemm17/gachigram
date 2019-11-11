@@ -40,7 +40,7 @@
                         </p>
                         <p>
                             {{ form.phone.label }}<br>
-                            {{ form.phone(class="login__input-text", placeholder="Номер телефона") }}<br>
+                            {{ form.phone(class="login__input-text", placeholder="Номер телефона", value="+7") }}<br>
                             {% for error in form.password.errors %}
                             <span style="color: red;">[{{ error }}]</span>
                             {% endfor %}

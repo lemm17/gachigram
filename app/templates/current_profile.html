@@ -3,7 +3,7 @@
 {% include '_head.html' %}
 <body>
     <div id="modal1" class="modal_div">
-        <a class="modal_item" href="#">Настройки профиля</a>
+        <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
         <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
     </div>
     <div id="overlay"></div>
@@ -12,23 +12,23 @@
         <div class="container container_border">
             <div class="row">
                 <div class="col-xl-3 ml-2">
-                    <img src="/static/icons/avatar.png" class="avatar">
+                    <img src="{{ user.avatar }}" class="avatar">
                 </div>
                 <div class="col-xl-6">
                     <div class="content_description">
-                        Привет, меня зовут NAME. Здесь находится строки о мне! Это описание занимает 100 символов (4 строки максимум)
+                        {{ user.description }}
                     </div>
                 </div>
             </div>
             <div class="row status_bar">
                 <div class="offset-xl-2 col-xl-3">
-                    <a href="#"><span class="nums">3</span> публикаций</a>
+                    <a href="#"><span class="nums">{{ user.count_publications() }}</span> публикаций</a>
                 </div>
                 <div class="col-xl-3">
-                    <a href="#"><span class="nums">362</span> подписчиков</a>
+                    <a href="#"><span class="nums">{{ user.count_subscribers() }}</span> подписчиков</a>
                 </div>
                 <div class="col-xl-3">
-                    <a href="#">Подписки: <span class="nums">47</span></a>
+                    <a href="#">Подписки: <span class="nums">{{ user.count_subscriptions() }}</span></a>
                 </div>
             </div>
         </div>
@@ -75,8 +75,5 @@
         </div>
     </section>
     {% include '_footer.html' %}
-    <script src="/static/jquery/jquery.min.js"></script>
-    <script src="/static/js/bootstrap.js"></script>
-    <script src="/static/js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% include '_head.html' %}
+    <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+<body>
+    {% include '_header.html' %}
+    <section style="padding-top: 80px;">
+        <div class="container">
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-xl-4 offset-xl-4">
+                    <img src='{{ user.avatar }}' class="avatar" alt="avatar">
+                </div>
+                <div class="col-xl-12">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <p class="p-3 mb-2 bg-dark text-white" style="padding: 15px; margin-top: 15px;">
+                                {% for message in messages %}
+                                    {{ message }}<br>
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-xl-4 offset-xl-4 settings-elem">
+                    <form name="form_otc" class="settings_text" action="/settingotc" method="post">
+                        Комментирование ваших публикаций:
+                        <input class="settings_checkbox" name="op_to_com" type="checkbox"
+                           {% if user.settings.op_to_com %}
+                           checked value="True" {% else %} value="False"
+                           {% endif %}
+                           data-toggle="toggle" data-size="sm" data-onstyle="dark" onchange="change_settings(event, 'otc')">
+                    </form>
+                </div>
+                <div class="col-xl-4 offset-xl-4 settings-elem">
+                    <form name="form_ea" class="settings_text" action="/settingea" method="post">
+                        Email уведомления:
+                        <input class="settings_checkbox" name="email_alerts" type="checkbox"
+                           {% if user.settings.email_alerts %}
+                           checked value="True" {% else %} value="False"
+                           {% endif %}
+                           data-toggle="toggle" data-size="sm" data-onstyle="dark" onchange="change_settings(event, 'ea')">
+                    </form>
+                </div>
+                <div class="col-xl-4 offset-xl-4 settings-elem">
+                    <form action="/upload" method="post" class="flex-row" enctype="multipart/form-data">
+                        <div class="settings_text">
+                            Автар:
+                            <input class="settings_checkbox" name="file" type="file" accept="image/jpeg,image/png">
+                        </div>
+                        <button type="submit" class="btn-refresh btn-dark"><img src="/static/icons/refresh.jpg" alt="refresh"></button>
+                    </form>
+                    <p><tt id="results"></tt></p>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% include '_footer.html' %}
+    <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+</body>
+</html>
