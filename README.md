@@ -96,6 +96,7 @@
 #
 
 **ДОРОЖНАЯ КАРТА**
-    * 16.11.19 - реализована сущность Publication
-    * 23.11.19 - реализована сущность Comment и вспомогательные таблицы Likes/Dislikes
-    * 30.11.19 - реализована сущность Notification и вспомогательная таблица Association subscriptions
+
+* 16.11.19 - реализована сущность Publication
+* 23.11.19 - реализована сущность Comment и вспомогательные таблицы Likes/Dislikes
+* 30.11.19 - реализована сущность Notification и вспомогательная таблица Association subscriptions
