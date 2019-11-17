@@ -128,6 +128,12 @@ class User(UserMixin, db.Model):
         for pub in self.publications:
             print(pub)
 
+    def get_pubs(self):
+        pubs = []
+        for pub in self.publications:
+             pubs.append(pub)
+        return pubs
+
     def delete_pub(self, id_publication):
         if self.publications.filter(Publication.id == id_publication).count() > 0:
             self.publications.filter(Publication.id == id_publication).delete()
@@ -217,6 +223,7 @@ class Publication(db.Model):
     content = db.Column(db.String(256), default='/static/publications/default.jpg')
     description = db.Column(db.Text)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    publication_date = db.Column(db.DateTime(), default=datetime.utcnow)
     likes = db.relationship(
         'User', secondary=likes,
         primaryjoin=(likes.c.id_publication == id),

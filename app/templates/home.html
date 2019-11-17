@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% include '_head.html' %}
+<body>
+    <div id="modal1" class="modal_div">
+        <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
+        <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
+    </div>
+    <div id="overlay"></div>
+    {% include '_header.html' %}
+    <section class="photos">
+        <div class="container container_border">
+            <div class="row">
+                {% for pub in publication %}
+                <div class="col-xl-4">
+                    <a href="#"><img src="{{ pub.content}}" class="photos__format align-middle" style="width: 150px;"></a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% include '_footer.html' %}
+</body>
+</html>
