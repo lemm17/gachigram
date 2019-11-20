@@ -129,10 +129,7 @@ class User(UserMixin, db.Model):
             print(pub)
 
     def get_pubs(self):
-        pubs = []
-        for pub in self.publications:
-             pubs.append(pub)
-        return pubs
+        return self.publications
 
     def delete_pub(self, id_publication):
         if self.publications.filter(Publication.id == id_publication).count() > 0:

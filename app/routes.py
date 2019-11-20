@@ -1,24 +1,25 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db
 from app.forms import *
 from flask_login import current_user, login_user, logout_user, login_required
 from app.entities import User, Publication
 from werkzeug.urls import url_parse
-# from config import S3_BUCKET, S3_KEY, S3_SECRET
-import boto3
+from config import S3_BUCKET, S3_KEY, S3_SECRET
+import boto3, json
 
-# s3 = boto3.client(
-#     's3',
-#     aws_access_key_id=S3_KEY,
-#     aws_secret_access_key=S3_SECRET,
-# )
+s3 = boto3.client(
+    's3',
+    aws_access_key_id=S3_KEY,
+    aws_secret_access_key=S3_SECRET,
+)
 
 
 @app.route('/')
 @app.route('/home')
 def home():
     pub = Publication.query.order_by(Publication.id.desc()).all()
-    return render_template("home.html", publication = pub)
+    return render_template("home.html", publication=pub)
+
 
 @login_required
 @app.route("/profile_<login>")
@@ -32,7 +33,7 @@ def profile(login):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('profile', login = current_user.login))
+        return redirect(url_for('profile', login=current_user.login))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(login=form.login.data.lower()).first()
@@ -42,7 +43,7 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('profile', login = current_user.login)
+            next_page = url_for('profile', login=current_user.login)
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
@@ -86,44 +87,64 @@ def setting_change(setting):
         db.session.commit()
     return ''
 
+
 @login_required
 @app.route('/add_publication', methods=['POST'])
 def add_publication():
-    pub = request.get_json()
-    toCom = Publication(content=pub['link'], description=pub['description'], id_user=current_user.id)
-    db.session.add(toCom)
-    db.session.commit()
-    return ""
-
-
-# @login_required
-# @app.route('/upload', methods=['POST'])
-# def upload_avatar():
-#     file = request.files['file']
-#     expansion = ''
-#     if file.filename[-4:] == '.png':
-#         expansion = '.png'
-#     elif file.filename[-4:] == '.jpg':
-#         expansion = '.jpg'
-#     elif file.filename[-5:] == '.jpeg':
-#         expansion = '.jpeg'
-#     if expansion:
-#         s3_cli = boto3.client('s3',
-#              aws_access_key_id=S3_KEY,
-#              aws_secret_access_key= S3_SECRET)
-#         s3_cli.put_object(Body=file, ACL='public-read', Bucket='lemmycases.ru', Key='avatars/{}'.format(current_user.login + expansion))
-#         current_user.avatar = "https://s3.eu-north-1.amazonaws.com/lemmycases.ru/avatars/{}".format(current_user.login + expansion)
-#         db.session.commit()
-#     else:
-#         flash('Выберите фотографию с форматом .jpg, .jpeg или .png')
-
-#     return redirect(url_for('settings'))
-
-
-@app.route("/id<prof_id>", methods=['GET', 'POST'])
-def check_profile(prof_id):
-    exists = db.session.query(User).filter_by(id=prof_id)
-    if exists.scalar() != None:
-        return render_template("profile.html", user=exists.first())
+    pub = request.files['newPub']
+    expansion = ''
+    if pub.filename[-4:] == '.png':
+        expansion = '.png'
+    elif pub.filename[-4:] == '.jpg':
+        expansion = '.jpg'
+    elif pub.filename[-5:] == '.jpeg':
+        expansion = '.jpeg'
+    if expansion:
+        current_user.create_pub(description=request.form['description'])
+        key = '{}/{}'.format(current_user.login.lower(), str(current_user.get_pubs()[-1].id) + expansion)
+        s3.put_object(Body=pub, ACL='public-read', Bucket='lemmycases.ru',
+                          Key=key)
+        current_user.get_pubs()[-1].content = "https://s3.eu-north-1.amazonaws.com/lemmycases.ru/{}".format(
+            key)
+        db.session.commit()
+        rqst = {
+            'ref': current_user.get_pubs()[-1].content,
+            'id': current_user.get_pubs()[-1].id
+        }
     else:
-        return "Пользователь не найден"
+        rqst = {
+            'error': 'Неверный формат!'
+        }
+    return json.dumps(rqst)
+
+
+@login_required
+@app.route('/upload', methods=['POST'])
+def upload_avatar():
+    file = request.files['file']
+    expansion = ''
+    if file.filename[-4:] == '.png':
+        expansion = '.png'
+    elif file.filename[-4:] == '.jpg':
+        expansion = '.jpg'
+    elif file.filename[-5:] == '.jpeg':
+        expansion = '.jpeg'
+    if expansion:
+        s3.put_object(Body=file, ACL='public-read', Bucket='lemmycases.ru',
+                          Key='avatars/{}'.format(current_user.login + expansion))
+        current_user.avatar = "https://s3.eu-north-1.amazonaws.com/lemmycases.ru/avatars/{}".format(
+            current_user.login + expansion)
+        db.session.commit()
+    else:
+        flash('Выберите фотографию с форматом .jpg, .jpeg или .png')
+
+    return redirect(url_for('settings'))
+
+
+# @app.route("/id_<prof_id>", methods=['GET', 'POST'])
+# def check_profile(prof_id):
+#     exists = User.query.get(prof_id)
+#     if exists:
+#         return render_template("current_profile.html", user=exists)
+#     else:
+#         return "Пользователь не найден"

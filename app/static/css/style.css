@@ -138,6 +138,7 @@ a:hover { text-decoration: none; }
 /* photos */
 .photos__format {
     width: 100%;
+    height: 100%;
 }
 .photos__format:hover {
     opacity: 0.7;

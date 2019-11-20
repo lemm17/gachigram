@@ -38,13 +38,6 @@
                             <span style="color: red;">[{{ error }}]</span>
                             {% endfor %}
                         </p>
-                        <p>
-                            {{ form.phone.label }}<br>
-                            {{ form.phone(class="login__input-text", placeholder="Номер телефона", value="+7") }}<br>
-                            {% for error in form.password.errors %}
-                            <span style="color: red;">[{{ error }}]</span>
-                            {% endfor %}
-                        </p>
                         <p>{{ form.submit() }}</p>
                         Уже зарегестрированы? <a href="{{url_for('login')}}">Войти</a>
                     </form>
