@@ -22,7 +22,6 @@ def home():
     Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
-
     '''
     pub = Publication.query.order_by(Publication.id.desc()).all()
     return render_template("home.html", publication=pub)
@@ -37,7 +36,6 @@ def profile(login):
     Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
-
     '''
     return render_template("profile.html", user=User.query.filter_by(login=login).first(), indexes=[3 * i - 2 for i in range(1, 1000)])
 
@@ -118,7 +116,6 @@ def settings():
     Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
-
     '''
     return render_template("settings.html", user=current_user)
 
