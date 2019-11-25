@@ -180,22 +180,20 @@ def likes(pub_id):
 @login_required
 @app.route('/dislikes<pub_id>', methods=['POST'])
 def dislikes(pub_id):
-    current_user.set_dislikes(int(pub_id))
+    current_user.set_dislike(int(pub_id))
     return "pupa"
 
 @login_required  # В РАЗРАБОТКЕ
-@app.route('/has_like<pub_id>', methods=['GET'])
+@app.route('/pub_data<pub_id>', methods=['GET'])
 def has_like(pub_id):
-    if int(pub_id) in current_user.likes:
-        print("kole4ko")
-    else:
-        print("o4ko")
-    return "kek"
-
-@login_required # В РАЗРАБОТКЕ
-@app.route('/has_dislike<pub_id>', methods=['GET'])
-def has_dislike(pub_id):
-    return "kek"
+    res = {}
+    pub = Publication.query.get(pub_id)
+    res["like"] = pub in current_user.likes
+    res["like_count"] = pub.likes.count()
+    pub = Publication.query.get(pub_id)
+    res["dislike"] = pub in current_user.dislikes
+    res["dislike_count"] = pub.dislikes.count()
+    return json.dumps(res)
 
 @login_required
 @app.route('/upload', methods=['POST'])

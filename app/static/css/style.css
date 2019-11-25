@@ -50,6 +50,12 @@ a:hover { text-decoration: none; }
 .logo__dislike:hover {
     opacity: 0.7;
 }
+.likes__count{
+    display: block;
+}
+.dislikes__count{
+    display: block;
+}
 .buttons-block {
     text-align: center;
     margin-top: 15px;
