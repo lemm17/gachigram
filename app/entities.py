@@ -21,6 +21,16 @@ dislikes = db.Table('dislikes',
 
 
 class User(UserMixin, db.Model):
+
+    '''Класс User наследован от UserMixin, db.Model,базового класса для всех 
+    моделей из Flask-SQLAlchemy и содержит описание модели базы данных пользователя.
+
+    Этот класс определяет несколько полей как переменные класса. Поля 
+    создаются как экземпляры класса db.Column, который принимает тип поля
+    в качестве аргумента, а также другие уточняющие аргументы. Экземпляры
+    класса db.relationship отражают взаимосвязь между базами данных
+    '''
+
     id = db.Column(db.Integer, primary_key=True, index=True)
     login = db.Column(db.String(64), index=True, unique=True, nullable=False)
     avatar = db.Column(db.String(256), default='https://s3.eu-north-1.amazonaws.com/lemmycases.ru/avatars/ricardo.jpg')
@@ -51,72 +61,98 @@ class User(UserMixin, db.Model):
     notifications = db.relationship('Notification', backref='recipient', lazy='dynamic')
 
     def sub(self, user):
-        """
+        '''Метод класса User(UserMixin, db.Model)
+
         Позволяет подписаться на user, т.е. отправляет уведомление
         :param user: объект пользователя на которого нужно подписаться
-        """
+        '''
         if not self.is_subscribed(user):
             self.subscriptions.append(user)
             db.session.add(Notification(type='subscription', id_user=user.id))
 
     def count_subscriptions(self):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Метод возвращает количество всех подписчиков пользователя
+        '''
         return len(self.subscriptions.all())
 
     def count_subscribers(self):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Метод возвращает количество всех подписок пользователя
+        '''
         return len(self.subscribers.all())
 
     def count_publications(self):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Метод возвращает количество всех публикаций пользователя
+        '''
         return len(self.publications.all())
 
     def show_subscriptions(self):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Метод выводит все подписки пользователя
+        '''
         for user in self.subscriptions:
             print(user)
 
     def show_subscribers(self):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Метод выводит всех подписчиков пользователя
+        '''
         for user in self.subscribers:
             print(user)
 
     def unsub(self, user):
-        """
+        '''Метод класса User(UserMixin, db.Model)
+
         Позволяет отписаться от user, т.е. отправляет уведомление
         :param user: объект пользователя от которого нужно отписаться
-        """
+        '''
         if self.is_subscribed(user):
             self.subscriptions.remove(user)
             db.session.add(Notification(type='unsubscription', id_user=user.id))
 
     def is_subscribed(self, user):
-        """
+        '''Метод класса User(UserMixin, db.Model)
+
         Проверяет, подписан ли self на user
         :param user: объект пользователя
-        """
+        '''
         if self.id != user.id:
             return self.subscriptions.filter(
                 association_subscriptions.c.subscription_obj_id == user.id).count() > 0
 
     def set_pass(self, password):
-        """
+        '''Метод класса User(UserMixin, db.Model)
+
         Позволяет установить пароль и захэшировать его
         :param password: пароль
-        """
+        '''
         self.password_hash = generate_password_hash(password)
 
     def check_pass(self, password):
-        """
+        '''Метод класса User(UserMixin, db.Model)
+
         Сравнивает пароль с хэшем
         :param password: пароль
         :return:
             True: верный пароль
             False: неверный пароль
-        """
+        '''
         return check_password_hash(self.password_hash, password)
 
     def create_pub(self, description, content=None):
-        """
+        '''Метод класса User(UserMixin, db.Model)
+
         Позволяет создать публикацию
         :param description: описание публикации
         :param content: ссылка на фото/видео
-        """
+        '''
         if not content:
             new_publication = Publication(description=description, id_user=self.id)
         else:
@@ -124,40 +160,53 @@ class User(UserMixin, db.Model):
         db.session.add(new_publication)
 
     def show_pub(self):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Метод выводит все публикации пользователя
+        '''
         for pub in self.publications:
             print(pub)
 
     def get_pubs(self):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Метод возвращает публикации пользователя
+        '''
         return self.publications
 
     def delete_pub(self, id_publication):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Метод удаляет публикацию из базы данных
+        '''
         if self.publications.filter(Publication.id == id_publication).count() > 0:
             self.publications.filter(Publication.id == id_publication).delete()
 
     def set_like(self, id_publication):
-        """
+        '''Метод класса User(UserMixin, db.Model)
+
         Позволяет поставить лайк на публикацию, т.е. отправляет уведомление
-        :param id_publication: айди публикации
-        """
+        :param id_publication: id публикации
+        '''
         publication = Publication.query.get(id_publication)
         publication.set_like(self)
         db.session.add(Notification(type='like', id_user=publication.author.id, id_publication=publication.id))
 
     def set_dislike(self, id_publication):
-        """
+        '''Метод класса User(UserMixin, db.Model)
         Позволяет поставить дизлайк на публикацию, т.е. отправляет уведомление
         :param id_publication: айди публикации
-        """
+        '''
         publication = Publication.query.get(id_publication)
         publication.set_dislike(self)
         db.session.add(Notification(type='dislike', id_user=publication.author.id, id_publication=publication.id))
 
     def create_comment(self, id_publication, text):
-        """
+        '''Метод класса User(UserMixin, db.Model)
         Позволяет создать комментарий, т.е. отправляет уведомление
         :param id_publication: айди публикации
         :param text: текст комментария
-        """
+        '''
         publication = Publication.query.get(id_publication)
         if publication.author.settings.op_to_com:
             publication.set_comment(self, text)
@@ -168,22 +217,29 @@ class User(UserMixin, db.Model):
 
     @classmethod
     def delete_comment(cls, id_comment):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Метод удаляет комментарий из базы данных
+        '''
         Comment.query.filter(Comment.id == id_comment).delete()
 
     def change_ea(self):
+
         self.settings.email_alerts_change()
 
     def change_otc(self):
+
         self.settings.op_to_com_change()
 
     def show_notification(self, **kwargs):
-        """
+        '''Метод класса User(UserMixin, db.Model)
+
         Позволяет просмотреть уведомления
         :param kwargs:
             read=True (показать прочитанные уведомления)
             read=False (показать непрочитанные уведомления)
             read=None (показать все уведомления)
-        """
+        '''
         if kwargs.get('read') is None:
             for notification in self.notifications:
                 print(notification)
@@ -197,10 +253,11 @@ class User(UserMixin, db.Model):
                     print(notification)
 
     def read_notification(self, id_notification=None):
-        """
+        '''Метод класса User(UserMixin, db.Model)
+
         Позволяет прочитать уведомлени(е/я)
         :param id_notification: айди уведомления (если необходимо удалить выборочно)
-        """
+        '''
         if not id_notification:
             for notification in self.notifications:
                 notification.read = True
@@ -211,10 +268,24 @@ class User(UserMixin, db.Model):
                     break
 
     def __repr__(self):
+        '''Метод класса User(UserMixin, db.Model)
+        
+        Метод __repr__ сообщает, как печатать объекты этого класса
+        '''
         return '<User {}>'.format(self.login)
 
 
 class Publication(db.Model):
+
+    '''Класс Publication наследован от db.Model,базового класса для всех 
+    моделей из Flask-SQLAlchemy и содержит описание модели базы данных публикации.
+
+    Этот класс определяет несколько полей как переменные класса. Поля 
+    создаются как экземпляры класса db.Column, который принимает тип поля
+    в качестве аргумента, а также другие уточняющие аргументы. Экземпляры
+    класса db.relationship отражают взаимосвязь между базами данных
+    '''
+
     id = db.Column(db.Integer, primary_key=True, index=True)
     content = db.Column(db.String(256), default='/static/publications/default.jpg')
     description = db.Column(db.Text)
@@ -231,6 +302,11 @@ class Publication(db.Model):
     comments = db.relationship('Comment', backref='publication', lazy='dynamic')
 
     def set_like(self, user):
+        '''Метод класса Publication(db.Model)
+        
+        Метод проверяет принадлежит ли лайк или дизлайк пользователю и добавить 
+        его в спискок или удалить
+        '''
         if user in self.likes:
             self.likes.remove(user)
         elif user in self.dislikes:
@@ -240,6 +316,11 @@ class Publication(db.Model):
             self.likes.append(user)
 
     def set_dislike(self, user):
+        '''Метод класса Publication(db.Model)
+        
+        Метод проверяет принадлежит ли лайк или дизлайк пользователю и добавить 
+        его в спискок или удалить
+        '''
         if user in self.dislikes:
             self.dislikes.remove(user)
         elif user in self.likes:
@@ -249,22 +330,42 @@ class Publication(db.Model):
             self.dislikes.append(user)
 
     def set_comment(self, user, text):
+        '''Метод класса Publication(db.Model)
+        
+        Метод позволяет добавить комменатрий к публикации
+        '''
         new_comment = Comment(id_publication=self.id, id_user=user.id, text=text)
         db.session.add(new_comment)
 
     def show_likes(self):
+        '''Метод класса Publication(db.Model)
+        
+        Метод выводит пользователя, если лайк принадлежит ему
+        '''
         for user in self.likes:
             print(user)
 
     def show_dislikes(self):
+        '''Метод класса Publication(db.Model)
+        
+        Метод выводит пользователя, если дизлайк принадлежит ему
+        '''
         for user in self.dislikes:
             print(user)
 
     def show_comments(self):
+        '''Метод класса Publication(db.Model)
+        
+        Метод выводит пользователя, если комментарий принадлежит ему
+        '''
         for user in self.comments:
             print(user)
 
     def __repr__(self):
+        '''Метод класса User(UserMixin, db.Model)
+        
+        Метод __repr__ сообщает, как печатать объекты этого класса
+        '''
         return '<Publication {} from {}>'.format(self.id, self.author)
 
 
@@ -276,10 +377,24 @@ class Comment(db.Model):
     time = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
+        '''Метод класса User(UserMixin, db.Model)
+        
+        Метод __repr__ сообщает, как печатать объекты этого класса
+        '''
         return '<Comment {} on publication {} from user {}>'.format(self.id, self.id_publication, self.id_user)
 
 
 class Settings(db.Model):
+
+    '''Класс Settings наследован от db.Model,базового класса для всех 
+    моделей из Flask-SQLAlchemy и содержит описание модели базы данных настроек.
+
+    Этот класс определяет несколько полей как переменные класса. Поля 
+    создаются как экземпляры класса db.Column, который принимает тип поля
+    в качестве аргумента, а также другие уточняющие аргументы. Экземпляры
+    класса db.relationship отражают взаимосвязь между базами данных
+    '''
+
     id_user = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False, primary_key=True, index=True)
     op_to_com = db.Column(db.Boolean, default=True)
     email_alerts = db.Column(db.Boolean, default=True)
@@ -291,10 +406,24 @@ class Settings(db.Model):
         self.op_to_com = not self.op_to_com
 
     def __repr__(self):
+        '''Метод класса User(UserMixin, db.Model)
+        
+        Метод __repr__ сообщает, как печатать объекты этого класса
+        '''
         return '<Settings {} EO = {}, OTC={}>'.format(self.author, self.email_alerts, self.op_to_com)
 
 
 class Notification(db.Model):
+
+     '''Класс Notification наследован от db.Model,базового класса для всех 
+    моделей из Flask-SQLAlchemy и содержит описание модели базы данных уведомлений.
+
+    Этот класс определяет несколько полей как переменные класса. Поля 
+    создаются как экземпляры класса db.Column, который принимает тип поля
+    в качестве аргумента, а также другие уточняющие аргументы. Экземпляры
+    класса db.relationship отражают взаимосвязь между базами данных
+    '''
+
     id = db.Column(db.Integer, primary_key=True, index=True)
     type = db.Column(db.String(32), nullable=False)
     id_publication = db.Column(db.Integer, db.ForeignKey('publication.id', ondelete='CASCADE'))
@@ -304,10 +433,19 @@ class Notification(db.Model):
     read = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
+        '''Метод класса User(UserMixin, db.Model)
+        
+        Метод __repr__ сообщает, как печатать объекты этого класса
+        '''
         return '<Notification {} with type {} for user {} ~ read = {}>'.format(self.id, self.type, self.id_user,
                                                                                 self.read)
 
 
 @login.user_loader
 def load_user(id):
+    '''Функция загрузчика пользователя.
+       
+    Функцию можно вызвать для загрузки пользователя, передав в её аргумент
+    идентификатор (id) пользователя.
+    '''
     return User.query.get(int(id))
