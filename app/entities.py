@@ -152,6 +152,12 @@ class User(UserMixin, db.Model):
         publication.set_dislike(self)
         db.session.add(Notification(type='dislike', id_user=publication.author.id, id_publication=publication.id))
 
+    def is_like(self, id_publication):
+        return id_publication in self.likes
+
+    def is_dislike(self, id_publication):
+        return id_publication in self.dislikes
+
     def create_comment(self, id_publication, text):
         """
         Позволяет создать комментарий, т.е. отправляет уведомление
@@ -238,6 +244,7 @@ class Publication(db.Model):
             self.likes.append(user)
         else:
             self.likes.append(user)
+        db.session.commit()
 
     def set_dislike(self, user):
         if user in self.dislikes:
@@ -247,6 +254,7 @@ class Publication(db.Model):
             self.dislikes.append(user)
         else:
             self.dislikes.append(user)
+        db.session.commit()
 
     def set_comment(self, user, text):
         new_comment = Comment(id_publication=self.id, id_user=user.id, text=text)

@@ -171,6 +171,31 @@ def add_publication():
         }
     return json.dumps(rqst)
 
+@login_required 
+@app.route('/likes<pub_id>', methods=['POST'])
+def likes(pub_id):
+    current_user.set_like(int(pub_id))
+    return "lupa"
+
+@login_required
+@app.route('/dislikes<pub_id>', methods=['POST'])
+def dislikes(pub_id):
+    current_user.set_dislikes(int(pub_id))
+    return "pupa"
+
+@login_required  # В РАЗРАБОТКЕ
+@app.route('/has_like<pub_id>', methods=['GET'])
+def has_like(pub_id):
+    if int(pub_id) in current_user.likes:
+        print("kole4ko")
+    else:
+        print("o4ko")
+    return "kek"
+
+@login_required # В РАЗРАБОТКЕ
+@app.route('/has_dislike<pub_id>', methods=['GET'])
+def has_dislike(pub_id):
+    return "kek"
 
 @login_required
 @app.route('/upload', methods=['POST'])

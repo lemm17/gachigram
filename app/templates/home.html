@@ -8,12 +8,13 @@
     </div>
     <div id="overlay"></div>
     {% include '_header.html' %}
+    <div id="psevdo" style="height: 72px; margin-bottom: 10px;"></div>
     <section class="photos">
         <div class="container container_border">
             <div class="row">
                 {% for pub in publication %}
                 <div class="col-xl-4">
-                    <a href="#"><img src="{{ pub.content }}" class="photos__format align-middle" style="width: 150px;"></a>
+                    <a href="#"><img src="{{ pub.content }}" class="photos__format align-middle"></a>
                 </div>
                 {% endfor %}
             </div>
