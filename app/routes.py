@@ -17,6 +17,13 @@ s3 = boto3.client(
 @app.route('/')
 @app.route('/home')
 def home():
+    '''Рендер html шаблона home.html
+
+    Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
+    аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
+    заполнители фактическими значениями.
+
+    '''
     pub = Publication.query.order_by(Publication.id.desc()).all()
     return render_template("home.html", publication=pub)
 
@@ -24,11 +31,35 @@ def home():
 @login_required
 @app.route("/profile_<login>")
 def profile(login):
+    '''Рендер html шаблона profile.html
+
+    Аргумент функции - другая функция "Login"
+    Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
+    аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
+    заполнители фактическими значениями.
+
+    '''
     return render_template("profile.html", user=User.query.filter_by(login=login).first(), indexes=[3 * i - 2 for i in range(1, 1000)])
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    '''Функция входа в систему (авторизации)
+    
+    Для авторизованных пользователей, функция осуществяляет перенаправление
+    пользователя на страницу профиля. Проверка производится с помощью выражения
+    "current_user.is_authenticated". Переменная current_user поступает из Flask-Login.
+
+    В другом случае происход обработка формы LoginForm(). Когда браузер получает
+    запрос POST в результате нажатия пользователем кнопки submit функция отправляет
+    запрос в базу данных с введенными в форму аторизации параметрами.
+    Если пользователь не найден, то функция перенаправляет его обратно на
+    страницу авторизации, иначе на страницу проифиля.
+
+    Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
+    аргументом шаблона, а затем генерирует html шаблон в соответствии с выполненными 
+    условиями, заменив его заполнители фактическими значениями.
+    '''
     if current_user.is_authenticated:
         return redirect(url_for('profile', login=current_user.login))
     form = LoginForm()
@@ -48,12 +79,24 @@ def login():
 @login_required
 @app.route('/logout')
 def logout():
+    '''Функция выхода из системы'''
     logout_user()
     return redirect(url_for('login'))
 
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
+    '''Функция регистрации пользователя
+    
+    Для авторизованных пользователей, функция осуществяляет перенаправление
+    пользователя на страницу профиля. Проверка производится с помощью выражения
+    "current_user.is_authenticated". Переменная current_user поступает из Flask-Login.
+
+    В другом случае происход обработка формы RegistrationForm(). Когда браузер получает
+    запрос POST в результате нажатия пользователем кнопки submit функция создает нового 
+    пользователя с именем, электронной почтой и паролем, записывает их в базу данных и 
+    затем перенаправляет запрос на вход, чтобы пользователь мог войти в систему.
+    '''
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = RegistrationForm()
@@ -70,6 +113,13 @@ def registration():
 @login_required
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    '''Рендер html шаблона settings.html
+
+    Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
+    аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
+    заполнители фактическими значениями.
+
+    '''
     return render_template("settings.html", user=current_user)
 
 
@@ -88,6 +138,16 @@ def setting_change(setting):
 @login_required
 @app.route('/add_publication', methods=['POST'])
 def add_publication():
+    '''Функция добавления публикации
+
+    Функция запрашивает файл с помощью модуля request и устанавливает
+    расширение запрашиваемого файла.
+
+    При соответсвии формата файла заданным условиям публикация создаётся
+    и отправляется на сервер. При ошибочном формате публикация не создаётся.
+
+    Функция возвращает объект формата json
+    '''
     pub = request.files['newPub']
     expansion = ''
     if pub.filename[-4:] == '.png':
@@ -118,6 +178,16 @@ def add_publication():
 @login_required
 @app.route('/upload', methods=['POST'])
 def upload_avatar():
+    '''Функция загрузки аватара
+
+    Функция запрашивает файл с помощью модуля request и устанавливает
+    расширение запрашиваемого файла.
+
+    При соответсвии формата файла заданным условиям аватар загружаетя в профиль.
+    При ошибочном формате аватар не загружается.
+
+    Функция возвращает ссылку '/settings'
+    '''
     file = request.files['file']
     expansion = ''
     if file.filename[-4:] == '.png':
@@ -141,12 +211,23 @@ def upload_avatar():
 @login_required
 @app.route('/subscribers_<user>')
 def subscribers(user):
+    '''Рендер html шаблона subscribers.html
+    
+    Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
+    аргументом шаблона, а затем генерирует указанный html шаблон для конкретного 
+    пользователя, заменив его заполнители фактическими значениями.
+    '''
     usr = User.query.filter_by(login=user).first()
     return render_template('subscribers.html', user=usr, var='subscribers')
 
 @login_required
 @app.route('/subscriptions_<user>')
 def subscriptions(user):
+    '''Рендер html шаблона subscribers.html
+
+    Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
+    аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
+    заполнители фактическими значениями.
+    '''
     usr = User.query.filter_by(login=user).first()
     return render_template('subscribers.html', user=usr, var='subscriptions')
-
