@@ -7,10 +7,10 @@
         <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
     </div>
     <div id="modal2" class="modal_div">
-        <form action="/add_publication" id="form_newPub" name="form_newPub" method="post" enctype="multipart/form-data">
+        <form action="/add_publication" name="form_newPub" method="post" enctype="multipart/form-data">
             <input name="newPub" type="file" accept="image/jpeg,image/png">
             <input id='description' type="text" placeholder="Описание к публикации" name='description'>
-            <button onclick="add_pub()">Опубликовать</button>
+            <button type="submit" onclick="add_pub(); return false;">Опубликовать</button>
         </form>
     </div>
     <div id="overlay"></div>
@@ -32,10 +32,10 @@
                     <a href="#"><span class="nums">{{ user.count_publications() }}</span> публикаций</a>
                 </div>
                 <div class="col-xl-3">
-                    <a href="#"><span class="nums">{{ user.count_subscribers() }}</span> подписчиков</a>
+                    <a href="{{ url_for('subscribers', user=user.login, var='subscribers') }}"><span class="nums">{{ user.count_subscribers() }}</span> подписчиков</a>
                 </div>
                 <div class="col-xl-3">
-                    <a href="#">Подписки: <span class="nums">{{ user.count_subscriptions() }}</span></a>
+                    <a href="{{ url_for('subscriptions', user=user.login, var='subscriptions') }}">Подписки: <span class="nums">{{ user.count_subscriptions() }}</span></a>
                 </div>
             </div>
         </div>
@@ -43,15 +43,35 @@
     <section class="photos">
         <div class="container container_border">
             <div class="row">
-                {% for publication in user.get_pubs() %}
-                <div class="col-xl-4">
-                    <a href="#"><img src="{{publication.content}}" class="photos__format align-middle" style="width: 150px;"></a>
-                </div>
-                {% endfor %}
-                <div class="col-xl-4" style="text-align: center;">
-                    <a href="#"  id="add"><img src="/static/icons/plus.png" class="photos__format align-middle" style="width: 150px;" ></a>
+                <div class="col-xl-12">
+                    <p id="addPub_error" class="p-3 mb-2 bg-dark text-white" style="padding: 15px; display: none;"></p>
                 </div>
             </div>
+            {% for publication in user.get_pubs() %}
+                {% if loop.index in indexes %}
+                    <div class="row align-items-center">
+                {% endif %}
+                <div class="col-xl-4">
+                    <a style="display: block;" href="#"><img id="pub{{publication.id}}" src="{{publication.content}}" class="photos__format align-middle"></a>
+                </div>
+                {% if loop.index % 3 == 0 %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if user == current_user %}
+                {% if user.count_publications() % 3 == 0 %}
+                    <div class="row align-items-center">
+                        <div class="col-xl-4" style="text-align: center;">
+                            <a href="#"  id="add"><img src="/static/icons/plus.png" class="photos__format align-middle" style="width: 150px;" ></a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-xl-4" style="text-align: center;">
+                        <a href="#"  id="add"><img src="/static/icons/plus.png" class="photos__format align-middle" style="width: 150px;" ></a>
+                    </div>
+                    </div>
+                {% endif %}
+            {% endif %}
         </div>
     </section>
     <section id="openPhoto" class="open-photo">

@@ -24,10 +24,7 @@ def home():
 @login_required
 @app.route("/profile_<login>")
 def profile(login):
-    if login == current_user.login:
-        return render_template("current_profile.html", user=current_user)
-    else:
-        return render_template("profile.html", user=current_user)
+    return render_template("profile.html", user=User.query.filter_by(login=login).first(), indexes=[3 * i - 2 for i in range(1, 1000)])
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -101,7 +98,7 @@ def add_publication():
         expansion = '.jpeg'
     if expansion:
         current_user.create_pub(description=request.form['description'])
-        key = '{}/{}'.format(current_user.login.lower(), str(current_user.get_pubs()[-1].id) + expansion)
+        key = '{}/{}'.format(current_user.login.lower(), str(current_user.count_publications()) + expansion)
         s3.put_object(Body=pub, ACL='public-read', Bucket='lemmycases.ru',
                           Key=key)
         current_user.get_pubs()[-1].content = "https://s3.eu-north-1.amazonaws.com/lemmycases.ru/{}".format(
@@ -109,7 +106,7 @@ def add_publication():
         db.session.commit()
         rqst = {
             'ref': current_user.get_pubs()[-1].content,
-            'id': current_user.get_pubs()[-1].id
+            'id': current_user.count_publications()
         }
     else:
         rqst = {
@@ -141,10 +138,15 @@ def upload_avatar():
     return redirect(url_for('settings'))
 
 
-# @app.route("/id_<prof_id>", methods=['GET', 'POST'])
-# def check_profile(prof_id):
-#     exists = User.query.get(prof_id)
-#     if exists:
-#         return render_template("current_profile.html", user=exists)
-#     else:
-#         return "Пользователь не найден"
+@login_required
+@app.route('/subscribers_<user>')
+def subscribers(user):
+    usr = User.query.filter_by(login=user).first()
+    return render_template('subscribers.html', user=usr, var='subscribers')
+
+@login_required
+@app.route('/subscriptions_<user>')
+def subscriptions(user):
+    usr = User.query.filter_by(login=user).first()
+    return render_template('subscribers.html', user=usr, var='subscriptions')
+

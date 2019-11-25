@@ -21,12 +21,11 @@ dislikes = db.Table('dislikes',
 
 
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, index=True)
     login = db.Column(db.String(64), index=True, unique=True, nullable=False)
     avatar = db.Column(db.String(256), default='https://s3.eu-north-1.amazonaws.com/lemmycases.ru/avatars/ricardo.jpg')
     description = db.Column(db.Text)
     email = db.Column(db.String(128), index=True, unique=True, nullable=False)
-    phone_number = db.Column(db.String(64), index=True, unique=True, nullable=False)
     password_hash = db.Column(db.String(256))  # , nullable=False)
     registration_date = db.Column(db.DateTime(), default=datetime.utcnow)
     subscriptions = db.relationship(
@@ -216,7 +215,7 @@ class User(UserMixin, db.Model):
 
 
 class Publication(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, index=True)
     content = db.Column(db.String(256), default='/static/publications/default.jpg')
     description = db.Column(db.Text)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
@@ -270,7 +269,7 @@ class Publication(db.Model):
 
 
 class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, index=True)
     id_publication = db.Column(db.Integer, db.ForeignKey('publication.id', ondelete='CASCADE'), nullable=False)
     id_user = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     text = db.Column(db.String, nullable=False)
@@ -281,7 +280,7 @@ class Comment(db.Model):
 
 
 class Settings(db.Model):
-    id_user = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False, primary_key=True)
+    id_user = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False, primary_key=True, index=True)
     op_to_com = db.Column(db.Boolean, default=True)
     email_alerts = db.Column(db.Boolean, default=True)
 
@@ -296,7 +295,7 @@ class Settings(db.Model):
 
 
 class Notification(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, index=True)
     type = db.Column(db.String(32), nullable=False)
     id_publication = db.Column(db.Integer, db.ForeignKey('publication.id', ondelete='CASCADE'))
     id_user = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)

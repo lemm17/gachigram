@@ -6,30 +6,48 @@
     <section class="subscribers">
         <div class="container">
             <div class="row">
-                <div class="col-xl-1 offset-xl-3">
-                    <span class="_bold">Подписчики:</span><br><br>
+                <div class="col-xl-12">
+                    {% if var == 'subscribers' %}
+                    <div class="_bold center">Подписчики <a href="{{ url_for('profile', login=user.login) }}" class="_bold">{{user.login}}</a></div>
+                    {% else %}
+                    <div class="_bold center">Подписки <a href="{{ url_for('profile', login=user.login) }}" class="_bold">{{user.login}}</a></div>
+                    {% endif %}
+                    <br><br>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-xl-1 offset-xl-3">
-                    <a href="#"><img src="icons/avatar1.jpg" class="subscrib__avatar-format"></a>
+            {% if var == 'subscribers' %}
+                {% for subscriber in user.subscribers %}
+                <div class="row">
+                    <div class="col-xl-1 offset-xl-3">
+                        <a href="{{ url_for('profile', login=subscriber.login) }}"><img src="{{ subscriber.avatar }}" class="subscrib__avatar-format"></a>
+                    </div>
+                    <div class="col-xl-5">
+                        <a href="{{ url_for('profile', login=subscriber.login) }}"><span class="_bold">{{ subscriber.login }}</span></a><br>
+                        {% if subscriber in current_user.subscriptions %}
+                            <button class="btn-dark">Отписаться</button>
+                        {% else %}
+                            <button class="btn-dark">Подписаться</button>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="col-xl-5">
-                    <a href="#"><span class="_bold">Van Darkholme</span></a><br>
-                    Вьетнам, Ханой. 26 лет<br>
-                    <button>Кнопка</button>
-                </div>
-            </div>
-            <div class="row _margin-top">
-                <div class="col-xl-1 offset-xl-3">
-                    <a href="#"><img src="icons/avatar2.jpg" class="subscrib__avatar-format"></a>
-                </div>
-                <div class="col-xl-5">
-                    <a href="#"><span class="_bold">Billy Herrington</span></a><br>
-                    США, Нью-Йорк. 49 лет<br>
-                    <button>Кнопка</button>
-                </div>
-            </div>
+                {% endfor %}
+            {% else %}
+                {% for subscriber in user.subscriptions %}
+                    <div class="row">
+                        <div class="col-xl-1 offset-xl-3">
+                            <a href="{{ url_for('profile', login=subscriber.login) }}"><img src="{{ subscriber.avatar }}" class="subscrib__avatar-format"></a>
+                        </div>
+                        <div class="col-xl-5">
+                            <a href="{{ url_for('profile', login=subscriber.login) }}"><span class="_bold">{{ subscriber.login }}</span></a><br>
+                            {% if subscriber in current_user.subscriptions %}
+                                <button class="btn-dark">Отписаться</button>
+                            {% else %}
+                                <button class="btn-dark">Подписаться</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
     </section>
     {% include '_footer.html' %}
