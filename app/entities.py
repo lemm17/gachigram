@@ -1,4 +1,4 @@
-from app import db, login
+﻿from app import db, login
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -26,8 +26,8 @@ class User(UserMixin, db.Model):
     моделей из Flask-SQLAlchemy и содержит описание модели базы данных пользователя.
 
     Этот класс определяет несколько полей как переменные класса. Поля 
-    создаются как экземпляры класса db.Column, который принимает тип поля
-    в качестве аргумента, а также другие уточняющие аргументы. Экземпляры
+    создаются как экземпляры класса db.Column, который принимает тип поля в 
+    качестве аргумента, а также другие уточняющие аргументы. Экземпляры
     класса db.relationship отражают взаимосвязь между базами данных
     '''
 
