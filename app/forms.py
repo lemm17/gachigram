@@ -44,6 +44,9 @@ class RegistrationForm(FlaskForm):
 
         Метод возвращает ошибку ValidationError() в случае, если логин, введённый
         пользователем not None, то есть логин уже содержится в базе данных.
+        
+        Аргументы функции:
+        username -- строка
         '''
         user = User.query.filter_by(login=username.data).first()
         if user is not None:
@@ -54,6 +57,9 @@ class RegistrationForm(FlaskForm):
 
         Метод возвращает ошибку ValidationError() в случае, если email, введённый
         пользователем not None, то есть email уже содержится в базе данных.
+
+        Аргументы функции:
+        email -- строка
         '''
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
