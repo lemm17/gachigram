@@ -131,17 +131,19 @@ class User(UserMixin, db.Model):
         '''Метод класса User(UserMixin, db.Model)
 
         Позволяет установить пароль и захэшировать его
-        :param password: пароль
+        Аргументы метода:
+        password -- пароль, строка
         '''
         self.password_hash = generate_password_hash(password)
 
     def check_pass(self, password):
         '''Метод класса User(UserMixin, db.Model)
 
-        Сравнивает пароль с хэшем
-        :param password: пароль
-        :return:
-            True: верный пароль
+        Сравнивает пароль с хэшем.
+        Аргументы метода:
+        password: пароль, строка.
+        Метод возвращает:
+            True: верный пароль,
             False: неверный пароль
         '''
         return check_password_hash(self.password_hash, password)
@@ -177,7 +179,9 @@ class User(UserMixin, db.Model):
     def delete_pub(self, id_publication):
         '''Метод класса User(UserMixin, db.Model)
 
-        Метод удаляет публикацию из базы данных
+        Метод удаляет публикацию из базы данных.
+        Аргументы метода:
+        id_publication -- id публикации, тип int
         '''
         if self.publications.filter(Publication.id == id_publication).count() > 0:
             self.publications.filter(Publication.id == id_publication).delete()
@@ -185,8 +189,9 @@ class User(UserMixin, db.Model):
     def set_like(self, id_publication):
         '''Метод класса User(UserMixin, db.Model)
 
-        Позволяет поставить лайк на публикацию, т.е. отправляет уведомление
-        :param id_publication: id публикации
+        Позволяет поставить лайк на публикацию, т.е. отправляет уведомление.
+        Аргументы метода:
+        id_publication -- id публикации, тип int
         '''
         publication = Publication.query.get(id_publication)
         publication.set_like(self)
@@ -194,24 +199,43 @@ class User(UserMixin, db.Model):
 
     def set_dislike(self, id_publication):
         '''Метод класса User(UserMixin, db.Model)
+
         Позволяет поставить дизлайк на публикацию, т.е. отправляет уведомление
-        :param id_publication: айди публикации
+        Аргументы метода:
+        id_publication -- id публикации, тип int
         '''
         publication = Publication.query.get(id_publication)
         publication.set_dislike(self)
         db.session.add(Notification(type='dislike', id_user=publication.author.id, id_publication=publication.id))
 
     def is_like(self, id_publication):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Аргументы метода:
+        id_publication -- id публикации, тип int
+        Метод возвращает:
+        True, если лайк принадлжеит публикации,
+        False в противном случае.
+        '''
         return id_publication in self.likes
 
     def is_dislike(self, id_publication):
+        '''Метод класса User(UserMixin, db.Model)
+
+        Аргументы метода:
+        id_publication -- id публикации, тип int
+        Метод возвращает:
+        True, если дизлайк принадлжеит публикации,
+        False в противном случае.
+        '''
         return id_publication in self.dislikes
 
     def create_comment(self, id_publication, text):
         '''Метод класса User(UserMixin, db.Model)
         Позволяет создать комментарий, т.е. отправляет уведомление
-        :param id_publication: айди публикации
-        :param text: текст комментария
+        Аргументы метода:
+        id_publication -- id публикации, тип int
+        text -- текст комментария, тип string
         '''
         publication = Publication.query.get(id_publication)
         if publication.author.settings.op_to_com:
@@ -226,13 +250,13 @@ class User(UserMixin, db.Model):
         '''Метод класса User(UserMixin, db.Model)
 
         Метод удаляет комментарий из базы данных
+        Аргументы метода:
+        id_comment -- id комментария, тип int
         '''
         Comment.query.filter(Comment.id == id_comment).delete()
 
     def change_ea(self):
-
         self.settings.email_alerts_change()
-
     def change_otc(self):
 
         self.settings.op_to_com_change()
@@ -241,7 +265,7 @@ class User(UserMixin, db.Model):
         '''Метод класса User(UserMixin, db.Model)
 
         Позволяет просмотреть уведомления
-        :param kwargs:
+        kwargs аргументы:
             read=True (показать прочитанные уведомления)
             read=False (показать непрочитанные уведомления)
             read=None (показать все уведомления)
@@ -262,7 +286,8 @@ class User(UserMixin, db.Model):
         '''Метод класса User(UserMixin, db.Model)
 
         Позволяет прочитать уведомлени(е/я)
-        :param id_notification: айди уведомления (если необходимо удалить выборочно)
+        Аргументы метода:
+        param id_notification -- id уведомления (если необходимо удалить выборочно)
         '''
         if not id_notification:
             for notification in self.notifications:
@@ -341,6 +366,8 @@ class Publication(db.Model):
         '''Метод класса Publication(db.Model)
         
         Метод позволяет добавить комменатрий к публикации
+        Аргументы метода:
+        text -- текст комментария, str
         '''
         new_comment = Comment(id_publication=self.id, id_user=user.id, text=text)
         db.session.add(new_comment)
@@ -455,5 +482,7 @@ def load_user(id):
        
     Функцию можно вызвать для загрузки пользователя, передав в её аргумент
     идентификатор (id) пользователя.
+    Аргументы функцииЖ
+    id -- id пользователя, str 
     '''
     return User.query.get(int(id))
