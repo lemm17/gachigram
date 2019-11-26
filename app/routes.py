@@ -36,6 +36,9 @@ def profile(login):
     Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
+
+    Аргументы функции:
+    login -- функция
     '''
     return render_template("profile.html", user=User.query.filter_by(login=login).first(), indexes=[3 * i - 2 for i in range(1, 1000)])
 
@@ -174,26 +177,40 @@ def add_publication():
 @login_required 
 @app.route('/likes<pub_id>', methods=['POST'])
 def likes(pub_id):
+    '''Функция установки лайка.
+
+    Аргументы функции:
+    pub_id -- строка, идентифицирующая пользователя
+
+    Функция возвращает строку.
+    '''
     current_user.set_like(int(pub_id))
     return "lupa"
 
 @login_required
 @app.route('/dislikes<pub_id>', methods=['POST'])
 def dislikes(pub_id):
+    '''Функция установки дизлайка.
+
+    Аргументы функции:
+    pub_id -- строка, идентифицирующая пользователя
+
+    Функция возвращает строку.
+    '''
     current_user.set_dislike(int(pub_id))
     return "pupa"
 
-@login_required  # В РАЗРАБОТКЕ
-@app.route('/pub_data<pub_id>', methods=['GET'])
-def has_like(pub_id):
-    res = {}
-    pub = Publication.query.get(pub_id)
-    res["like"] = pub in current_user.likes
-    res["like_count"] = pub.likes.count()
-    pub = Publication.query.get(pub_id)
-    res["dislike"] = pub in current_user.dislikes
-    res["dislike_count"] = pub.dislikes.count()
-    return json.dumps(res)
+# @login_required  # В РАЗРАБОТКЕ
+# @app.route('/pub_data<pub_id>', methods=['GET'])
+# def has_like(pub_id):
+#     res = {}
+#     pub = Publication.query.get(pub_id)
+#     res["like"] = pub in current_user.likes
+#     res["like_count"] = pub.likes.count()
+#     pub = Publication.query.get(pub_id)
+#     res["dislike"] = pub in current_user.dislikes
+#     res["dislike_count"] = pub.dislikes.count()
+#     return json.dumps(res)
 
 @login_required
 @app.route('/upload', methods=['POST'])
@@ -236,6 +253,9 @@ def subscribers(user):
     Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
     аргументом шаблона, а затем генерирует указанный html шаблон для конкретного 
     пользователя, заменив его заполнители фактическими значениями.
+
+    Аргументы функции:
+    user -- класс, пользователь   
     '''
     usr = User.query.filter_by(login=user).first()
     return render_template('subscribers.html', user=usr, var='subscribers')
@@ -248,6 +268,9 @@ def subscriptions(user):
     Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
+
+    Аргументы функции:
+    user -- класс, пользователь 
     '''
     usr = User.query.filter_by(login=user).first()
     return render_template('subscribers.html', user=usr, var='subscriptions')
