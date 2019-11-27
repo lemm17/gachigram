@@ -172,30 +172,35 @@ def add_publication():
     return json.dumps(rqst)
 
 @login_required 
-@app.route('/likes<pub_id>', methods=['POST'])
+@app.route('/like<pub_id>', methods=['POST'])
 def likes(pub_id):
     current_user.set_like(int(pub_id))
-    return "lupa"
+    return ""
 
 @login_required
-@app.route('/dislikes<pub_id>', methods=['POST'])
+@app.route('/dislike<pub_id>', methods=['POST'])
 def dislikes(pub_id):
-    current_user.set_dislikes(int(pub_id))
-    return "pupa"
+    current_user.set_dislike(int(pub_id))
+    return ""
 
-@login_required  # В РАЗРАБОТКЕ
-@app.route('/has_like<pub_id>', methods=['GET'])
-def has_like(pub_id):
-    if int(pub_id) in current_user.likes:
-        print("kole4ko")
-    else:
-        print("o4ko")
-    return "kek"
+@login_required
+@app.route('/pub_info<pub_id>', methods=['GET'])
+def pub_info(pub_id):
+    pub = Publication.query.filter_by(id=int(pub_id)).first()
+    response = {
+        "publication_date": pub.publication_date,
+        "count_likes": pub.count_likes(),
+        "count_dislikes": pub.count_dislikes(),
+        "comments": pub.get_comments(),
+        "current_user_like": pub.has_like(current_user.id),
+        "current_user_dislike": pub.has_dislike(current_user.id)
+    }
+    return jsonify(response)
 
 @login_required # В РАЗРАБОТКЕ
-@app.route('/has_dislike<pub_id>', methods=['GET'])
+@app.route('/count_dislikes<pub_id>', methods=['GET'])
 def has_dislike(pub_id):
-    return "kek"
+    return
 
 @login_required
 @app.route('/upload', methods=['POST'])
