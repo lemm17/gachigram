@@ -37,7 +37,8 @@ def profile(login):
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
     '''
-    return render_template("profile.html", user=User.query.filter_by(login=login).first(), indexes=[3 * i - 2 for i in range(1, 1000)])
+    return render_template("profile.html", user=User.query.filter_by(login=login).first(),
+                           indexes=[3 * i - 2 for i in range(1, 1000)])
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -157,7 +158,7 @@ def add_publication():
         current_user.create_pub(description=request.form['description'])
         key = '{}/{}'.format(current_user.login.lower(), str(current_user.count_publications()) + expansion)
         s3.put_object(Body=pub, ACL='public-read', Bucket='lemmycases.ru',
-                          Key=key)
+                      Key=key)
         current_user.get_pubs()[-1].content = "https://s3.eu-north-1.amazonaws.com/lemmycases.ru/{}".format(
             key)
         db.session.commit()
@@ -171,17 +172,20 @@ def add_publication():
         }
     return json.dumps(rqst)
 
-@login_required 
+
+@login_required
 @app.route('/like<pub_id>', methods=['POST'])
 def likes(pub_id):
     current_user.set_like(int(pub_id))
     return ""
+
 
 @login_required
 @app.route('/dislike<pub_id>', methods=['POST'])
 def dislikes(pub_id):
     current_user.set_dislike(int(pub_id))
     return ""
+
 
 @login_required
 @app.route('/pub_info<pub_id>', methods=['GET'])
@@ -197,10 +201,30 @@ def pub_info(pub_id):
     }
     return jsonify(response)
 
-@login_required # В РАЗРАБОТКЕ
-@app.route('/count_dislikes<pub_id>', methods=['GET'])
-def has_dislike(pub_id):
-    return
+
+@login_required
+@app.route('/unsub<login>', methods=['POST'])
+def unsub(login):
+    user = User.query.filter_by(login=login).first()
+    current_user.unsub(user)
+    response = {
+        'status': 'ok'
+    }
+    db.session.commit()
+    return jsonify(response)
+
+
+@login_required
+@app.route('/sub<login>', methods=['POST'])
+def sub(login):
+    user = User.query.filter_by(login=login).first()
+    current_user.sub(user)
+    response = {
+        'status': 'ok'
+    }
+    db.session.commit()
+    return jsonify(response)
+
 
 @login_required
 @app.route('/upload', methods=['POST'])
@@ -225,7 +249,7 @@ def upload_avatar():
         expansion = '.jpeg'
     if expansion:
         s3.put_object(Body=file, ACL='public-read', Bucket='lemmycases.ru',
-                          Key='avatars/{}'.format(current_user.login + expansion))
+                      Key='avatars/{}'.format(current_user.login + expansion))
         current_user.avatar = "https://s3.eu-north-1.amazonaws.com/lemmycases.ru/avatars/{}".format(
             current_user.login + expansion)
         db.session.commit()
@@ -246,6 +270,7 @@ def subscribers(user):
     '''
     usr = User.query.filter_by(login=user).first()
     return render_template('subscribers.html', user=usr, var='subscribers')
+
 
 @login_required
 @app.route('/subscriptions_<user>')

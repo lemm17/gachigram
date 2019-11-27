@@ -24,9 +24,9 @@
                     <div class="col-xl-5">
                         <a href="{{ url_for('profile', login=subscriber.login) }}"><span class="_bold">{{ subscriber.login }}</span></a><br>
                         {% if subscriber in current_user.subscriptions %}
-                            <button class="btn-dark">Отписаться</button>
-                        {% else %}
-                            <button class="btn-dark">Подписаться</button>
+                            <button id="{{ subscriber.login }}" class="btn-dark btn-unsub">Отписаться</button>
+                        {% elif current_user != subscriber %}
+                            <button id="{{ subscriber.login }}" class="btn-dark btn-sub">Подписаться</button>
                         {% endif %}
                     </div>
                 </div>
@@ -40,9 +40,9 @@
                         <div class="col-xl-5">
                             <a href="{{ url_for('profile', login=subscriber.login) }}"><span class="_bold">{{ subscriber.login }}</span></a><br>
                             {% if subscriber in current_user.subscriptions %}
-                                <button class="btn-dark">Отписаться</button>
-                            {% else %}
-                                <button class="btn-dark">Подписаться</button>
+                                <button id="{{ subscriber.login }}" class="btn-dark btn-unsub">Отписаться</button>
+                            {% elif current_user != subscriber %}
+                                <button id="{{ subscriber.login }}" class="btn-dark btn-sub">Подписаться</button>
                             {% endif %}
                         </div>
                     </div>
@@ -50,6 +50,7 @@
             {% endif %}
         </div>
     </section>
+    <script src="/static/js/sub.js"></script>
     {% include '_footer.html' %}
 </body>
 </html>

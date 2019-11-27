@@ -13,14 +13,19 @@ $(document).ready(function() {
         xhr.send();
         xhr.onload = () => {
             let rqst = JSON.parse(xhr.response);
-            console.log(rqst);
             document.getElementsByClassName('likes__count')[0].textContent = rqst.count_likes;
             document.getElementsByClassName('dislikes__count')[0].textContent = rqst.count_dislikes;
+            let like = document.getElementsByClassName('logo__like')[0],
+                dislike = document.getElementsByClassName('logo__dislike')[0];
             if (rqst.current_user_like) {
-                document.getElementsByClassName('logo__like')[0].src = "/static/icons/like1.png";
+                like.src = "/static/icons/like1.png";
+            } else {
+                like.src = "/static/icons/like.png";
             }
             if (rqst.current_user_dislike) {
-                document.getElementsByClassName('logo__dislike')[0].src = "/static/icons/dislike1.png";
+                dislike.src = "/static/icons/dislike1.png";
+            } else {
+                dislike.src = "/static/icons/dislike.png";
             }
 
             // Прогружаем комментарии
@@ -45,6 +50,11 @@ $(document).ready(function() {
             $(this).css('display', 'none');
             overlay.fadeOut(400);
         });
+        let i,
+            comments = document.getElementsByClassName('comments-comment');
+        for (i = comments.length - 1; i >= 0; i--) {
+            comments[i].remove();
+        }
     });
 });
 
