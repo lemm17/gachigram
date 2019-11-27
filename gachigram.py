@@ -1,11 +1,11 @@
-from app import app, db
+﻿from app import app, db
 from app.entities import *
 
 
 @app.shell_context_processor
 def make_shell_context():
-    """
-    Контекст оболочки
+    """ Контекст оболочки
+
     Функция создаёт контекст оболочки, который добавляет экземпляр и модели базы
     данных в сеанс оболочки Декоратор app.shell_context_processor регистрирует
     функцию как функцию контекста оболочки. Когда запускается команда flask shell,
