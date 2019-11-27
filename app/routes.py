@@ -75,6 +75,38 @@ def login():
     return render_template('login.html', title='Sign In', form=form)
 
 
+# def authenticated():                           #попытка зафункционалить
+#     '''Возвращает True или False'''
+#     return current_user.is_authenticated
+# def validate(form):
+#     '''Возвращает True или False'''
+#     return form.validate_on_submit()
+# def get_user(form):
+#     return User.query.filter_by(login=form.login.data.lower()).first()
+# def chek_pass(usr,form):
+#     '''Возвращает True или False'''
+#     return usr.check_pass(form.password.data)
+# def authentication(form):
+#     if get_user(LoginForm()) and chek_pass(get_user(LoginForm()),LoginForm()):
+#         login_user(get_user(), remember=form.remember_me.data)
+#         next_page = request.args.get('next')
+#     else:
+#         flash('Invalid username or password')
+#         return redirect(url_for('login'))
+#     if not next_page or url_parse(next_page).netloc != '':
+#         next_page = url_for('profile', login=current_user.login)
+#     return redirect(next_page)    
+# def render(form)
+#     return render_template('login.html', title='Sign In', form=form)
+
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if authenticated():
+#         return redirect(url_for('profile', login=current_user.login))
+#     authentication(LoginForm()) if validate(LoginForm()) else render(LoginForm())
+
+
+
 @login_required
 @app.route('/logout')
 def logout():
