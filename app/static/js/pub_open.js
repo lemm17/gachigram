@@ -28,6 +28,15 @@ $(document).ready(function() {
                 dislike.src = "/static/icons/dislike.png";
             }
 
+            $("#pub_user_avatar").attr("src", rqst.user_avatar);
+            $("#pub_user_login").html(rqst.user_login);
+            $("#pub_user").attr("href", window.location.origin + "/profile_" + rqst.user_login);
+            if(rqst.is_current_user){
+                $(".logo__delete").css("display", "inline")
+            } else {
+                $(".logo__delete").css("display", "none")
+            }
+
             // Прогружаем комментарии
             let commetnsElem = document.getElementsByClassName('comments')[0];
             rqst.comments.forEach(a => {
@@ -103,6 +112,25 @@ $(".logo__dislike").click(() =>{
         dCount.textContent = Number(dCount.textContent) + 1;
     }
 });
+
+$(".logo__delete").click(() =>{
+    let pub_id = $(".open-photo__photo").attr("id").replace("pub","");
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/pub_delete' + pub_id, true);
+    xhr.send();
+    $("#openPhoto")
+        .animate({opacity: 0}, 200, 
+        function(){
+            $(this).css('display', 'none');
+            overlay.fadeOut(400);
+        });
+        let i,
+            comments = document.getElementsByClassName('comments-comment');
+        for (i = comments.length - 1; i >= 0; i--) {
+            comments[i].remove();
+        }
+    location.reload(); // Временный костыль
+})
 
 function newComment(login, avatar, text, time){
     return '<div class="comments-comment">' +

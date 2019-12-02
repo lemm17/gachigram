@@ -11,15 +11,16 @@
     <div id="psevdo" style="height: 72px; margin-bottom: 10px;"></div>
     <section class="photos">
         <div class="container container_border">
-            <div class="row">
-                {% for pub in publication %}
-                <div class="col-xl-4">
-                    <a href="#"><img src="{{ pub.content }}" class="photos__format align-middle"></a>
+            {% for pub in publication %}
+            <div class="row row-lenta">
+                <div class="col content-middle">
+                    <a href="#"><img id="pub{{ pub.id }}" src="{{ pub.content }}" class="photos__format align-middle publication"></a>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
     </section>
+    {% include '_open_photo.html' %}
     {% include '_footer.html' %}
 </body>
 </html>

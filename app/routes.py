@@ -223,16 +223,24 @@ def dislikes(pub_id):
 @app.route('/pub_info<pub_id>', methods=['GET'])
 def pub_info(pub_id):
     pub = Publication.query.filter_by(id=int(pub_id)).first()
+    user = User.query.filter_by(id=pub.id_user).first()
     response = {
         "publication_date": pub.publication_date,
         "count_likes": pub.count_likes(),
         "count_dislikes": pub.count_dislikes(),
         "comments": pub.get_comments(),
         "current_user_like": pub.has_like(current_user.id),
-        "current_user_dislike": pub.has_dislike(current_user.id)
+        "current_user_dislike": pub.has_dislike(current_user.id),
+        "user_login": user.login,
+        "user_avatar": user.avatar,
+        "is_current_user": current_user.id == user.id
     }
     return jsonify(response)
 
+@login_required
+@app.route('/pub_delete<pub_id>', methods=['POST'])
+def pub_delete(pub_id):
+    return 'В процессе разработки'
 
 @login_required
 @app.route('/unsub<login>', methods=['POST'])
