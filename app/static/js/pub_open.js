@@ -1,10 +1,10 @@
 $(document).ready(function() {
     let overlay = $('.logo__exit'),
-    open_modal = $('.publication'),
+    open_modal = $("body"),
     close = $('.logo__exit'),
     div = $('#openPhoto');
     
-    open_modal.click( function(event){
+    open_modal.on("click", ".publication" ,function(event){
         $(".open-photo__photo").attr("src", $(event.target).attr("src"));
         $(".open-photo__photo").attr("id", $(event.target).attr("id"));
         let pub_id = $(event.target).attr("id").replace("pub", "");
@@ -145,3 +145,20 @@ function newComment(login, avatar, text, time){
             '</div>' +
         '</div>';
 }
+
+
+$("#SendComment").click(()=>{
+    let pub_id = $(".open-photo__photo").attr("id").replace("pub","");
+    let txt = $("#UserComment").val();
+    console.log(txt);
+    if(txt.replace(" ", "").length > 0){
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/Comment' + pub_id + "/" + txt, true);
+        xhr.send();
+        xhr.onload = () =>{
+                let rqst = JSON.parse(xhr.response);
+                $(".comments").append(newComment( rqst["Login"], rqst["Avatar"], txt, 0));
+        }
+        
+    }
+})

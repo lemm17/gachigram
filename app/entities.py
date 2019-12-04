@@ -232,11 +232,9 @@ class User(UserMixin, db.Model):
         Comment.query.filter(Comment.id == id_comment).delete()
 
     def change_ea(self):
-
         self.settings.email_alerts_change()
 
     def change_otc(self):
-
         self.settings.op_to_com_change()
 
     def show_notification(self, **kwargs):

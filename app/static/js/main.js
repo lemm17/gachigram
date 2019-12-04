@@ -99,4 +99,31 @@ $(document).ready(function() {
     });
 });
 
+// $(window).scroll(function() 
+// {
+//      if  ($(window).scrollTop() == $(document).height() - $(window).height()) 
+//      {
+//         console.log("Пупа");
+//      }
+// });
 
+$("#MorePublicationPlease button").click(() =>{
+    let pub_id = $(".row-lenta").last().children().children().children().attr("id").replace("pub", "");
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', '/MorePublication' + pub_id, true);
+    xhr.send();
+    xhr.onload = () =>{
+        let rqst = JSON.parse(xhr.response);
+        for(let key in rqst){
+            $(`
+            <div class="row row-lenta">
+                <div class="col content-middle">
+                    <a href="#"><img id="pub${key}" src="${rqst[key]["Content"]}" class="photos__format align-middle publication"></a>
+                    <div id="AboutPub"><span id="AboutPubLogin">${rqst[key]["User_login"]}</span></div>
+                </div>
+            </div>`)
+                .insertAfter(".row-lenta #pub" + pub_id);
+        }
+    }
+    
+});

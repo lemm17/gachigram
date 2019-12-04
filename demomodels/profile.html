@@ -7,6 +7,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Gachigram | Профиль</title>
     <link rel="stylesheet" href="fonts/ProximaNova/ProximaNova.css">
+    <style>
+    #AboutPub{
+        top: 0;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        display: none;
+    }
+    .col-xl-4:hover > #AboutPub{
+        display: block;
+        z-index: 10;
+    }
+    #AboutPubLogin{
+        width: 100%;
+        position:absolute;
+        bottom: 0;
+        height: 30px;
+        background: #fff;
+    }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -78,13 +98,14 @@
         <div class="container container_border">
             <div class="row">
                 <div class="col-xl-4">
-                    <a href="#openPhoto"><img src="icons/photo1.png" class="photos__format"></a>
+                    <a href="#openPhoto"><img src="icons/photo1.png" class="photos__format"><div id="AboutPub"><span id="AboutPubLogin">PupaLupa</span></div></a>
                 </div>
                 <div class="col-xl-4">
-                    <a href="#openPhoto"><img src="icons/photo2.jpg" class="photos__format"></a>
+                    <a href="#openPhoto"><img src="icons/photo2.jpg" class="photos__format"><div id="AboutPub"><span id="AboutPubLogin">PupaLupa</span></div></a>
                 </div>
                 <div class="col-xl-4">
                     <a href="#openPhoto"><img src="icons/photo3.jpg" class="photos__format"></a>
+                    <div id="AboutPub"><span id="AboutPubLogin">PupaLupa</span></div>
                 </div>
                 <div>
                     <a href="#" id='add'>Кликни меня сучка</a>

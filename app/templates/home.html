@@ -15,9 +15,13 @@
             <div class="row row-lenta">
                 <div class="col content-middle">
                     <a href="#"><img id="pub{{ pub.id }}" src="{{ pub.content }}" class="photos__format align-middle publication"></a>
+                    <div id="AboutPub"><span id="AboutPubLogin">Тут логин будет но Я чёт не придумал как его передавать</span></div>
                 </div>
             </div>
             {% endfor %}
+            <div id="MorePublicationPlease" class="row">
+                <button>Показать ещё</button>
+            </div>
         </div>
     </section>
     {% include '_open_photo.html' %}

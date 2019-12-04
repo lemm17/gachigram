@@ -23,7 +23,10 @@ def home():
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
     '''
-    pub = Publication.query.order_by(Publication.id.desc()).all()
+    if current_user.is_authenticated:
+        pub = Publication.query.order_by(Publication.id.desc()).filter(Publication.id_user != current_user.id).limit(3).all()
+    else:
+        pub = Publication.query.order_by(Publication.id.desc()).limit(3).all()
     return render_template("home.html", publication=pub)
 
 
@@ -240,6 +243,8 @@ def pub_info(pub_id):
 @login_required
 @app.route('/pub_delete<pub_id>', methods=['POST'])
 def pub_delete(pub_id):
+    current_user.delete_pub(int(pub_id))
+    db.session.commit()
     return 'В процессе разработки'
 
 @login_required
@@ -323,3 +328,23 @@ def subscriptions(user):
     '''
     usr = User.query.filter_by(login=user).first()
     return render_template('subscribers.html', user=usr, var='subscriptions')
+
+@login_required
+@app.route('/MorePublication<last_id>', methods=["GET"])
+def MorePublicationPlease(last_id):
+    pubs = Publication.query.order_by(Publication.id.desc()).filter(Publication.id < int(last_id)).limit(10).all()
+    response = {}
+    for pub in pubs:
+        response[pub.id] = {"Content" : pub.content , "User_login": User.query.filter_by(id = pub.id_user).first().login}
+    return jsonify(response)
+
+@login_required
+@app.route('/Comment<pub_id>/<txt>', methods=["GET"])
+def PubComment(pub_id,txt):
+    current_user.create_comment(int(pub_id), txt)
+    db.session.commit()
+    response = {
+        "Login": current_user.login,
+        "Avatar": current_user.avatar
+    }
+    return jsonify(response)
