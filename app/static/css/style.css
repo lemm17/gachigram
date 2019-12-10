@@ -155,6 +155,8 @@ a:hover { text-decoration: none; }
 /* photos */
 .photos__format {
     max-width: 100%;
+    margin: 0px auto;
+    display: block;
 }
 .photos__format:hover {
     opacity: 0.7;
@@ -202,6 +204,9 @@ a:hover { text-decoration: none; }
 }
 .comments {
     padding: 10px;
+    overflow-y: scroll;
+    max-height: 500px;
+    margin-top: 15px;
 }
 .comments-comment {
     background-color: #f1f1f1;
@@ -402,4 +407,83 @@ a:hover { text-decoration: none; }
 }
 .open-photo-container .open-photo__photo{
     text-align: center;
+}
+#MorePublicationPlease button{
+    margin: 0 auto;
+}
+/* Наведение на публикацию в ленте */
+#AboutPub{
+    width: 100%;
+    position: absolute;
+    display: none;
+}
+.col:hover > #AboutPub{
+    display: block;
+    z-index: 10;
+}
+#AboutPubLogin{
+    left: 0;
+    width: 100%;
+    position:absolute;
+    opacity: 0.7;
+    bottom: 0;
+    background: #fff;
+}
+
+/* hover */
+
+.box_hover {
+	overflow: hidden;
+	position: relative;
+}
+
+.box_hover > img {
+	position: relative;
+	min-height: 250px;
+	transition: all .5s linear;
+	transform: translateX(-30px);
+}
+
+.box_hover:hover > img {
+	transition: all .5s linear;
+	opacity: .9;
+}
+
+.box_hover object {
+	position: absolute;
+	z-index: 20;
+	color: #fff;
+	left: 30px;
+	transition: all .4s linear;
+	transform: translateX(-50%);
+	opacity: 0;
+}
+
+.box_hover object {
+    top: 15px;
+    left: 40px;
+	text-transform: uppercase;
+}
+
+.box_hover:hover > object{
+	transition: all .4s linear;
+	transform: translateX(0%);
+	opacity: 1;
+}
+
+.hover_ef {
+	width: inherit;
+	height: inherit;
+	background-color: rgba(255,0,0,0.7);
+	position: absolute;
+	z-index: 10;
+	bottom: 0;
+	left: 0;
+	transition: all .3s linear;
+	transform: translateY(100%);
+}
+
+.box_hover:hover > .hover_ef {
+	transition: all .3s linear;
+	transform: translateY(60%);
 }

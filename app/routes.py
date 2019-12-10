@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db
 from app.forms import *
 from flask_login import current_user, login_user, logout_user, login_required
-from app.entities import User, Publication
+from app.entities import User, Publication, Settings
 from werkzeug.urls import url_parse
 from config import S3_BUCKET, S3_KEY, S3_SECRET
 import boto3, json
@@ -23,8 +23,17 @@ def home():
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
     '''
-    pub = Publication.query.order_by(Publication.id.desc()).all()
-    return render_template("home.html", publication=pub)
+    pubs = []
+    if current_user.is_authenticated:
+        for subscription in current_user.subscriptions:
+            for publication in subscription.publications.all():
+                pubs.insert(0, publication)
+                if len(pubs) == 10:
+                    return render_template("home.html", publication=pubs, user=current_user, page='home')
+    else:
+        return redirect(url_for('login'))
+
+    return render_template("home.html", publication=pubs, user=current_user, page='home')
 
 
 @login_required
@@ -37,8 +46,11 @@ def profile(login):
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
     '''
-    return render_template("profile.html", user=User.query.filter_by(login=login).first(),
-                           indexes=[3 * i - 2 for i in range(1, 1000)])
+    return render_template("profile.html",
+                           user=User.query.filter_by(login=login).first(),
+                           indexes=[3 * i - 2 for i in range(1, 1000)],
+                           page='profile'
+                           )
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -106,19 +118,12 @@ def login():
 #     authentication(LoginForm()) if validate(LoginForm()) else render(LoginForm())
 
 
-
 @login_required
 @app.route('/logout')
 def logout():
     '''Функция выхода из системы'''
     logout_user()
     return redirect(url_for('login'))
-
-
-@login_required
-@app.route('/messages')
-def messages():
-    return render_template('messages.html', user=current_user)
 
 
 @app.route('/registration', methods=['GET', 'POST'])
@@ -141,6 +146,9 @@ def registration():
         user = User(login=form.login.data.lower(), email=form.email.data)
         user.set_pass(form.password.data)
         db.session.add(user)
+        db.session.commit()
+        user_settings = Settings(id_user=user.id)
+        db.session.add(user_settings)
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
@@ -202,7 +210,7 @@ def add_publication():
         db.session.commit()
         rqst = {
             'ref': current_user.get_pubs()[-1].content,
-            'id': current_user.count_publications()
+            'id': current_user.get_pubs()[-1].id
         }
     else:
         rqst = {
@@ -239,16 +247,19 @@ def pub_info(pub_id):
         "current_user_dislike": pub.has_dislike(current_user.id),
         "user_login": user.login,
         "user_avatar": user.avatar,
-        "is_current_user": current_user.id == user.id
+        "is_current_user": current_user.id == user.id,
+        "op_to_com": user.settings.op_to_com
     }
     return jsonify(response)
+
 
 @login_required
 @app.route('/pub_delete<pub_id>', methods=['POST'])
 def pub_delete(pub_id):
     current_user.delete_pub(int(pub_id))
     db.session.commit()
-    return ""
+    return 'В процессе разработки'
+
 
 @login_required
 @app.route('/unsub<login>', methods=['POST'])
@@ -331,3 +342,33 @@ def subscriptions(user):
     '''
     usr = User.query.filter_by(login=user).first()
     return render_template('subscribers.html', user=usr, var='subscriptions')
+
+
+@login_required
+@app.route('/MorePublication<series>', methods=["GET"])
+def MorePublicationPlease(series):
+    response = {}
+    i = 0
+    for subscription in current_user.subscriptions:
+        for publication in subscription.publications.all():
+            i += 1
+            if i > int(series):
+                response[publication.id] = {
+                    "Content": publication.content,
+                    "User_login": publication.author.login
+                }
+                if len(response.keys()) == 10:
+                    return jsonify(response)
+    return jsonify(response)
+
+
+@login_required
+@app.route('/Comment<pub_id>/<txt>', methods=["GET"])
+def PubComment(pub_id, txt):
+    current_user.create_comment(int(pub_id), txt)
+    db.session.commit()
+    response = {
+        "Login": current_user.login,
+        "Avatar": current_user.avatar
+    }
+    return jsonify(response)

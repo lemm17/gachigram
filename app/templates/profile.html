@@ -4,7 +4,6 @@
 <body>
     <div id="modal1" class="modal_div">
         <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
-        <a class="modal_item" href="{{url_for('messages')}}">Сообщения</a>
         <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
     </div>
     <div id="modal2" class="modal_div">
@@ -61,7 +60,7 @@
             </div>
             {% for publication in user.get_pubs() %}
                 {% if loop.index in indexes %}
-                    <div class="row align-items-center">
+                    <div class="row align-items-center pub_row">
                 {% endif %}
                 <div class="col-xl-4">
                     <a style="display: block;" href="#"><img id="pub{{publication.id}}" src="{{publication.content}}" class="photos__format align-middle publication"></a>
@@ -72,7 +71,7 @@
             {% endfor %}
             {% if user == current_user %}
                 {% if user.count_publications() % 3 == 0 %}
-                    <div class="row align-items-center">
+                    <div class="row align-items-center pub_row">
                         <div class="col-xl-4" style="text-align: center;">
                             <a href="#"  id="add"><img src="/static/icons/plus.png" class="photos__format align-middle" style="width: 150px;" ></a>
                         </div>

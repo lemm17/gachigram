@@ -2,14 +2,35 @@
     <div class="container">
         <div class="row">
             <div class="col-xl-7 open-photo-container">
-                <a href="#"><img src="/static/icons/photo2f.jpg" class="open-photo__photo"></a>
-                <a href="#" id="pub_user">
-                    <div class="comment-nickname">
-                        <img id="pub_user_avatar" src="" class="avatar__format"><span class="_bold _text-padding" id="pub_user_login">Van Darkholme</span><br>
+                <a href="#">
+                    <div class="row">
+                        <div class="offset-xl-2 col-xl-10">
+                            <div class="box_hover">
+                                <img src="/static/icons/photo2f.jpg" class="open-photo__photo img1">
+                                <object type="owo/uwu">
+                                    <a href="#" id="pub_user">
+                                        <div class="comment-nickname">
+                                            <img id="pub_user_avatar" src="" class="avatar__format"><span class="_bold _text-padding" id="pub_user_login">Van </span><br>
+                                        </div>
+                                    </a>
+                                </object>
+                                <div class="hover_ef"></div>
+                            </div>
+                        </div>
                     </div>
+
                 </a>
             </div>
-            <div class="col-xl-4 comments">
+            <div class="col-xl-4">
+                <div class="comments">
+
+                </div>
+<!--                {% if page == 'profile' and (user == current_user or user.settings.op_to_com) %}-->
+<!--                    <div class="for_comment">-->
+<!--                        <input type="text" id="UserComment">-->
+<!--                        <button id="SendComment">Комментировать</button>-->
+<!--                    </div>-->
+<!--                {% endif %}-->
             </div>
             <div class="col-xl-1">
                 <div class="buttons-block">

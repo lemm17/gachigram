@@ -5,6 +5,7 @@ var overlay = $('.logo__exit'),
     buttonDelete = $('.logo__delete');
 
 open_modal.click( function(event){
+    event.preventDefault();
     open_modal = $('.publication');
     $(".open-photo__photo").attr("src", $(event.target).attr("src"));
     $(".open-photo__photo").attr("id", $(event.target).attr("id"));
@@ -32,7 +33,7 @@ open_modal.click( function(event){
         $("#pub_user_avatar").attr("src", rqst.user_avatar);
         $("#pub_user_login").html(rqst.user_login);
         $("#pub_user").attr("href", window.location.origin + "/profile_" + rqst.user_login);
-        if(rqst.is_current_user){
+        if (rqst.is_current_user){
             $(".logo__delete").css("display", "inline")
         } else {
             $(".logo__delete").css("display", "none")
@@ -44,6 +45,16 @@ open_modal.click( function(event){
             commetnsElem.insertAdjacentHTML('beforeend',
                 newComment(a['login'], a['avatar'], a['comment_text'], a['comment_time']));
         });
+
+        // Проверка разрешения комментирования
+        if (rqst.op_to_com || rqst.is_current_user){
+            let commenting_elem = '' +
+            '<div class="for_comment">' +
+                '<input type="text" id="UserComment">' +
+                '<button id="SendComment">Комментировать</button>' +
+            '</div>';
+            document.getElementsByClassName('comments')[0].insertAdjacentHTML('afterend', commenting_elem);
+        }
     }
     overlay.fadeIn(400,
     function(){
@@ -61,10 +72,11 @@ close.click( function(){
         overlay.fadeOut(400);
     });
     let i,
-        comments = document.getElementsByClassName('comments-comment');
+    comments = document.getElementsByClassName('comments-comment');
     for (i = comments.length - 1; i >= 0; i--) {
         comments[i].remove();
     }
+    document.getElementsByClassName('for_comment')[0].remove();
 });
 
 buttonDelete.click(function(){
@@ -73,7 +85,7 @@ buttonDelete.click(function(){
     xhr.open('POST', '/pub_delete' + pub_id, true);
     xhr.send();
     close.click();
-    let row = document.getElementById('pub48').parentElement.parentElement.parentElement;
+    let row = document.getElementById('pub' + pub_id).parentElement.parentElement.parentElement;
     let addElem = '<div class="col-xl-4" style="text-align: center;">' +
                 '<a href="#" id="add"><img src="/static/icons/plus.png" class="photos__format" style="width: 150px;"></a>' +
                 '</div>';
@@ -129,6 +141,21 @@ $(".logo__dislike").click(() =>{
     } else {
         dislike.src = "/static/icons/dislike1.png";
         dCount.textContent = Number(dCount.textContent) + 1;
+    }
+});
+
+$("#SendComment").click(()=>{
+    let pub_id = $(".open-photo__photo").attr("id").replace("pub","");
+    let txt = $("#UserComment").val();
+    console.log(txt);
+    if(txt.replace(" ", "").length > 0){
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/Comment' + pub_id + "/" + txt, true);
+        xhr.send();
+        xhr.onload = () =>{
+                let rqst = JSON.parse(xhr.response);
+                $(".comments").append(newComment( rqst["Login"], rqst["Avatar"], txt, 0));
+        }
     }
 });
 
