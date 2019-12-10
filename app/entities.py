@@ -3,23 +3,78 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
-association_subscriptions = db.Table('association_subscriptions',
-                                     db.Column('subscriber_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-                                     db.Column('subscription_obj_id', db.Integer, db.ForeignKey('user.id'),
-                                               primary_key=True)
-                                     )
+# association_messages = db.Table(
+#     'association_messages',
+#     db.Column('id_dialog', db.Integer, db.ForeignKey('dialog.id')),
+#     db.Column('id_message', db.Integer, db.ForeignKey('message.id'), primary_key=True)
+# )
 
-likes = db.Table('likes',
-                 db.Column('id_publication', db.Integer, db.ForeignKey('publication.id', ondelete='CASCADE'),
-                           primary_key=True),
-                 db.Column('id_user', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
-                 )
+# association_dialog = db.Table(
+#     'association_dialog',
+#     db.Column('id_first', db.Integer, db.ForeignKey('user.id')),
+#     db.Column('id_second', db.Integer, db.ForeignKey('user.id')),
+#     db.Column('id_dialog', db.Integer, db.ForeignKey('dialog.id'), primary_key=True)
+# )
 
-dislikes = db.Table('dislikes',
-                    db.Column('id_publication', db.Integer, db.ForeignKey('publication.id', ondelete='CASCADE'),
-                              primary_key=True),
-                    db.Column('id_user', db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
-                    )
+association_subscriptions = db.Table(
+    'association_subscriptions',
+    db.Column(
+        'subscriber_id',
+        db.Integer,
+        db.ForeignKey('user.id'),
+        primary_key=True
+    ),
+    db.Column(
+        'subscription_obj_id',
+        db.Integer,
+        db.ForeignKey('user.id'),
+        primary_key=True
+    )
+)
+
+likes = db.Table(
+    'likes',
+    db.Column(
+        'id_publication',
+        db.Integer,
+        db.ForeignKey(
+            'publication.id',
+            ondelete='CASCADE'
+        ),
+        primary_key=True
+    ),
+    db.Column(
+        'id_user',
+        db.Integer,
+        db.ForeignKey(
+            'user.id',
+            ondelete='CASCADE'
+        ),
+        primary_key=True
+    )
+)
+
+dislikes = db.Table(
+    'dislikes',
+    db.Column(
+        'id_publication',
+        db.Integer,
+        db.ForeignKey(
+            'publication.id',
+            ondelete='CASCADE'
+        ),
+        primary_key=True
+    ),
+    db.Column(
+        'id_user',
+        db.Integer,
+        db.ForeignKey(
+            'user.id',
+            ondelete='CASCADE'
+        ),
+        primary_key=True
+    )
+)
 
 
 class User(UserMixin, db.Model):
@@ -37,26 +92,31 @@ class User(UserMixin, db.Model):
     avatar = db.Column(db.String(256), default='https://s3.eu-north-1.amazonaws.com/lemmycases.ru/avatars/ricardo.jpg')
     description = db.Column(db.Text)
     email = db.Column(db.String(128), index=True, unique=True, nullable=False)
-    password_hash = db.Column(db.String(256))  # , nullable=False)
+    password_hash = db.Column(db.String(256))
     registration_date = db.Column(db.DateTime(), default=datetime.utcnow)
     subscriptions = db.relationship(
         'User', secondary=association_subscriptions,
         primaryjoin=(association_subscriptions.c.subscriber_id == id),
         secondaryjoin=(association_subscriptions.c.subscription_obj_id == id),
-        backref=db.backref('association_subscriptions', lazy='dynamic'), lazy='dynamic')
+        backref=db.backref('association_subscriptions', lazy='dynamic'),
+        lazy='dynamic'
+    )
     subscribers = db.relationship(
         'User', secondary=association_subscriptions,
         primaryjoin=(association_subscriptions.c.subscription_obj_id == id),
         secondaryjoin=(association_subscriptions.c.subscriber_id == id),
-        lazy='dynamic')
+        lazy='dynamic'
+    )
     likes = db.relationship(
         'Publication', secondary=likes,
         primaryjoin=(likes.c.id_user == id),
-        lazy='dynamic')
+        lazy='dynamic'
+    )
     dislikes = db.relationship(
         'Publication', secondary=dislikes,
         primaryjoin=(dislikes.c.id_user == id),
-        lazy='dynamic')
+        lazy='dynamic'
+    )
     publications = db.relationship('Publication', backref='author', lazy='dynamic')
     settings = db.relationship('Settings', uselist=False, backref='author')
     notifications = db.relationship('Notification', backref='recipient', lazy='dynamic')
@@ -70,7 +130,12 @@ class User(UserMixin, db.Model):
         """
         if not self.is_subscribed(user):
             self.subscriptions.append(user)
-            db.session.add(Notification(type='subscription', id_user=user.id))
+            db.session.add(Notification(
+                type='subscription',
+                id_user=user.id,
+                text="Пользователь {} подписался на вас".format(self.login))
+            )
+            db.session.commit()
 
     def count_subscriptions(self):
         """Метод класса User(UserMixin, db.Model)
@@ -117,7 +182,12 @@ class User(UserMixin, db.Model):
         """
         if self.is_subscribed(user):
             self.subscriptions.remove(user)
-            db.session.add(Notification(type='unsubscription', id_user=user.id))
+            db.session.add(Notification(
+                type='unsubscription',
+                id_user=user.id,
+                text="Пользователь {} отписался от вас".format(self.login)
+            ))
+            db.session.commit()
 
     def is_subscribed(self, user):
         """Метод класса User(UserMixin, db.Model)
@@ -192,7 +262,13 @@ class User(UserMixin, db.Model):
         """
         publication = Publication.query.get(id_publication)
         publication.set_like(self)
-        db.session.add(Notification(type='like', id_user=publication.author.id, id_publication=publication.id))
+        db.session.add(Notification(
+            type='like',
+            id_user=publication.author.id,
+            id_publication=publication.id,
+            text="Пользователь {} поставил лайк на публикацию {}".format(self.login, id_publication)
+        ))
+        db.session.commit()
 
     def set_dislike(self, id_publication):
         """Метод класса User(UserMixin, db.Model)
@@ -201,7 +277,13 @@ class User(UserMixin, db.Model):
         """
         publication = Publication.query.get(id_publication)
         publication.set_dislike(self)
-        db.session.add(Notification(type='dislike', id_user=publication.author.id, id_publication=publication.id))
+        db.session.add(Notification(
+            type='dislike',
+            id_user=publication.author.id,
+            id_publication=publication.id,
+            text="Пользователь {} поставил дизлайк на публикацию {}".format(self.login, id_publication)
+        ))
+        db.session.commit()
 
     def is_like(self, id_publication):
         return id_publication in self.likes
@@ -221,7 +303,10 @@ class User(UserMixin, db.Model):
             db.session.add(Notification(type='comment',
                                         id_user=publication.author.id,
                                         id_publication=publication.id,
-                                        text=text))
+                                        text="Пользователь {} оставил комментарий на публикацию {}".format(self.login,
+                                                                                                           id_publication)
+                                        ))
+            db.session.commit()
 
     @classmethod
     def delete_comment(cls, id_comment):
@@ -229,14 +314,12 @@ class User(UserMixin, db.Model):
 
         Метод удаляет комментарий из базы данных
         """
-        Comment.query.filter(Comment.id == id_comment).delete()
+        Comment.query.filter(Comment.id == id_comment).first().delete()
 
     def change_ea(self):
-
         self.settings.email_alerts_change()
 
     def change_otc(self):
-
         self.settings.op_to_com_change()
 
     def show_notification(self, **kwargs):
@@ -274,6 +357,49 @@ class User(UserMixin, db.Model):
                 if notification.id == id_notification:
                     notification.read = True
                     break
+
+    # ---------------------------------------------------
+
+    def get_message_lists(self):
+        pass
+
+    # def send_message(self, id_recipient, text):
+    #     msg_list = None
+    #     for message_list in self.message_lists:
+    #         if message_list.id_user == self.id:
+    #             message_list.id_first_user == id_recipient
+    #             and message_list.id_second_user == self.id
+    #             or message_list.id_first_user == self.id
+    #             and message_list.id_second_user == id_recipient
+    #         ):
+    #             msg_list = message_list
+    #             break
+    #     if msg_list:
+    #         new_message = Message(id_sender=self.id, id_message_list=msg_list.id, text=text)
+    #         db.session.add(new_message)
+    #     else:
+    #         new_message_list = MessageList(id_first_user=self.id, id_second_user=id_recipient)
+    #         db.session.add(new_message_list)
+    #         db.session.add(Message(id_sender=self.id, id_message_list=new_message_list.id, text=text))
+    #     db.session.commit()
+    #
+    # def delete_message(self, id_recipient , id_message):
+    #     msg_list = None
+    #     for message_list in self.message_lists:
+    #         if (
+    #                 message_list.id_first_user == id_recipient
+    #                 and message_list.id_second_user == self.id
+    #                 or message_list.id_first_user == self.id
+    #                 and message_list.id_second_user == id_recipient
+    #         ):
+    #             msg_list = message_list
+    #             break
+    #     if msg_list:
+    #         for message in msg_list:
+    #             if message.id == id_message:
+    #                 message.delete()
+    #                 db.session.commit()
+    #                 break
 
     def __repr__(self):
         """Метод класса User(UserMixin, db.Model)
@@ -474,6 +600,34 @@ class Notification(db.Model):
         """
         return '<Notification {} with type {} for user {} ~ read = {}>'.format(self.id, self.type, self.id_user,
                                                                                self.read)
+
+
+# class Message(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     sender = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+#     text = db.Column(db.String, nullable=False)
+#     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+#     read = db.Column(db.Boolean, default=False)
+#
+#     def read_message(self):
+#         self.read = True
+#
+#     # def get_sender(self):
+#     #     return User.query.get(self.id_sender)
+
+
+# class Dialog(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     delete_first = db.Column(db.Boolean, default=False)
+#     delete_second = db.Column(db.Boolean, default=False)
+#     id_user_first = db.Column(db.Integer, db.ForeignKey('user.id', name='user_first', ondelete='CASCADE'))
+#     id_user_second = db.Column(db.Integer, db.ForeignKey('user.id', name='user_second', ondelete='CASCADE'))
+#     messages = db.relationship(
+#         'Message', secondary=association_messages,
+#         primaryjoin=(association_messages.c.id_dialog == id),
+#         backref=db.backref('dialog', lazy='dynamic'),
+#         lazy='dynamic'
+#     )
 
 
 @login.user_loader

@@ -115,6 +115,12 @@ def logout():
     return redirect(url_for('login'))
 
 
+@login_required
+@app.route('/messages')
+def messages():
+    return render_template('messages.html', user=current_user)
+
+
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     '''Функция регистрации пользователя
@@ -132,7 +138,7 @@ def registration():
         return redirect(url_for('home'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(login=form.login.data.lower(), email=form.email.data, phone_number=form.phone.data)
+        user = User(login=form.login.data.lower(), email=form.email.data)
         user.set_pass(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -240,7 +246,9 @@ def pub_info(pub_id):
 @login_required
 @app.route('/pub_delete<pub_id>', methods=['POST'])
 def pub_delete(pub_id):
-    return 'В процессе разработки'
+    current_user.delete_pub(int(pub_id))
+    db.session.commit()
+    return ""
 
 @login_required
 @app.route('/unsub<login>', methods=['POST'])

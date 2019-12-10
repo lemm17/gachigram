@@ -27,11 +27,11 @@ function add_pub(){
                 elemError.style = "display: none;"
             }, 5000);
         } else {
-            let addElem = '<div class="col-xl-4">' +
-                    '<a href="#" id="add"><img src="/static/icons/plus.png" class="photos__format"></a>' +
+            let addElem = '<div class="col-xl-4" style="text-align: center;">' +
+                    '<a href="#" id="add"><img src="/static/icons/plus.png" class="photos__format" style="width: 150px;"></a>' +
                     '</div>';
             let newPub = '<div class="col-xl-4">' +
-                '<a href="#"><img id="pub' + rqst.id + '" src="' + rqst.ref + '" class="photos__format"></a></div>';
+                '<a href="#"><img id="pub' + rqst.id + '" src="' + rqst.ref + '" class="photos__format align-middle publication"></a></div>';
             let last = document.getElementsByClassName('align-items-center')[document.getElementsByClassName('align-items-center').length - 1];
             if (last.childElementCount == 3){
                 document.getElementById('add').parentElement.insertAdjacentHTML('beforebegin', newPub);
@@ -42,6 +42,56 @@ function add_pub(){
             }
         }
         $('.modal_close, #overlay').click();
+        open_modal = $('.publication');
+        //---------------Жёсткий костыль---------------------
+        open_modal.click( function(event){
+            open_modal = $('.publication');
+            $(".open-photo__photo").attr("src", $(event.target).attr("src"));
+            $(".open-photo__photo").attr("id", $(event.target).attr("id"));
+            let pub_id = $(event.target).attr("id").replace("pub", "");
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', '/pub_info' + pub_id, true);
+            xhr.send();
+            xhr.onload = () => {
+                let rqst = JSON.parse(xhr.response);
+                document.getElementsByClassName('likes__count')[0].textContent = rqst.count_likes;
+                document.getElementsByClassName('dislikes__count')[0].textContent = rqst.count_dislikes;
+                let like = document.getElementsByClassName('logo__like')[0],
+                    dislike = document.getElementsByClassName('logo__dislike')[0];
+                if (rqst.current_user_like) {
+                    like.src = "/static/icons/like1.png";
+                } else {
+                    like.src = "/static/icons/like.png";
+                }
+                if (rqst.current_user_dislike) {
+                    dislike.src = "/static/icons/dislike1.png";
+                } else {
+                    dislike.src = "/static/icons/dislike.png";
+                }
+
+                $("#pub_user_avatar").attr("src", rqst.user_avatar);
+                $("#pub_user_login").html(rqst.user_login);
+                $("#pub_user").attr("href", window.location.origin + "/profile_" + rqst.user_login);
+                if(rqst.is_current_user){
+                    $(".logo__delete").css("display", "inline")
+                } else {
+                    $(".logo__delete").css("display", "none")
+                }
+
+                // Прогружаем комментарии
+                let commetnsElem = document.getElementsByClassName('comments')[0];
+                rqst.comments.forEach(a => {
+                    commetnsElem.insertAdjacentHTML('beforeend',
+                        newComment(a['login'], a['avatar'], a['comment_text'], a['comment_time']));
+                });
+            }
+            overlay.fadeIn(400,
+            function(){
+                div
+                .css('display', 'block')
+                .animate({opacity: 1}, 200);
+            });
+        });
     };
 }
 
@@ -77,24 +127,24 @@ $(document).ready(function() {
     open_modal = $('#add'),
     close = $('.modal_close, #overlay'),
     modal = $('.modal_div');
-    
-    open_modal.click( function(event){ 
+
+    open_modal.click( function(event){
         event.preventDefault();
         let div = $("#modal2")
-        overlay.fadeIn(400, 
+        overlay.fadeIn(400,
         function(){
-            $(div) 
+            $(div)
             .css('display', 'block')
             .animate({opacity: 1, top: '50%'}, 200);
         });
     });
-    
+
     close.click( function(){
-        modal 
-        .animate({opacity: 0, top: '45%'}, 200, 
-        function(){ 
+        modal
+        .animate({opacity: 0, top: '45%'}, 200,
+        function(){
             $(this).css('display', 'none');
-            overlay.fadeOut(400); 
+            overlay.fadeOut(400);
         });
     });
 });

@@ -1,70 +1,89 @@
-$(document).ready(function() {
-    let overlay = $('.logo__exit'),
+var overlay = $('.logo__exit'),
     open_modal = $('.publication'),
     close = $('.logo__exit'),
-    div = $('#openPhoto');
-    
-    open_modal.click( function(event){
-        $(".open-photo__photo").attr("src", $(event.target).attr("src"));
-        $(".open-photo__photo").attr("id", $(event.target).attr("id"));
-        let pub_id = $(event.target).attr("id").replace("pub", "");
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', '/pub_info' + pub_id, true);
-        xhr.send();
-        xhr.onload = () => {
-            let rqst = JSON.parse(xhr.response);
-            document.getElementsByClassName('likes__count')[0].textContent = rqst.count_likes;
-            document.getElementsByClassName('dislikes__count')[0].textContent = rqst.count_dislikes;
-            let like = document.getElementsByClassName('logo__like')[0],
-                dislike = document.getElementsByClassName('logo__dislike')[0];
-            if (rqst.current_user_like) {
-                like.src = "/static/icons/like1.png";
-            } else {
-                like.src = "/static/icons/like.png";
-            }
-            if (rqst.current_user_dislike) {
-                dislike.src = "/static/icons/dislike1.png";
-            } else {
-                dislike.src = "/static/icons/dislike.png";
-            }
+    div = $('#openPhoto'),
+    buttonDelete = $('.logo__delete');
 
-            $("#pub_user_avatar").attr("src", rqst.user_avatar);
-            $("#pub_user_login").html(rqst.user_login);
-            $("#pub_user").attr("href", window.location.origin + "/profile_" + rqst.user_login);
-            if(rqst.is_current_user){
-                $(".logo__delete").css("display", "inline")
-            } else {
-                $(".logo__delete").css("display", "none")
-            }
+open_modal.click( function(event){
+    open_modal = $('.publication');
+    $(".open-photo__photo").attr("src", $(event.target).attr("src"));
+    $(".open-photo__photo").attr("id", $(event.target).attr("id"));
+    let pub_id = $(event.target).attr("id").replace("pub", "");
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', '/pub_info' + pub_id, true);
+    xhr.send();
+    xhr.onload = () => {
+        let rqst = JSON.parse(xhr.response);
+        document.getElementsByClassName('likes__count')[0].textContent = rqst.count_likes;
+        document.getElementsByClassName('dislikes__count')[0].textContent = rqst.count_dislikes;
+        let like = document.getElementsByClassName('logo__like')[0],
+            dislike = document.getElementsByClassName('logo__dislike')[0];
+        if (rqst.current_user_like) {
+            like.src = "/static/icons/like1.png";
+        } else {
+            like.src = "/static/icons/like.png";
+        }
+        if (rqst.current_user_dislike) {
+            dislike.src = "/static/icons/dislike1.png";
+        } else {
+            dislike.src = "/static/icons/dislike.png";
+        }
 
-            // Прогружаем комментарии
-            let commetnsElem = document.getElementsByClassName('comments')[0];
-            rqst.comments.forEach(a => {
-                commetnsElem.insertAdjacentHTML('beforeend',
-                    newComment(a['login'], a['avatar'], a['comment_text'], a['comment_time']));
-            });
+        $("#pub_user_avatar").attr("src", rqst.user_avatar);
+        $("#pub_user_login").html(rqst.user_login);
+        $("#pub_user").attr("href", window.location.origin + "/profile_" + rqst.user_login);
+        if(rqst.is_current_user){
+            $(".logo__delete").css("display", "inline")
+        } else {
+            $(".logo__delete").css("display", "none")
         }
-        overlay.fadeIn(400, 
-        function(){
-            div 
-            .css('display', 'block')
-            .animate({opacity: 1}, 200);
+
+        // Прогружаем комментарии
+        let commetnsElem = document.getElementsByClassName('comments')[0];
+        rqst.comments.forEach(a => {
+            commetnsElem.insertAdjacentHTML('beforeend',
+                newComment(a['login'], a['avatar'], a['comment_text'], a['comment_time']));
         });
+    }
+    overlay.fadeIn(400,
+    function(){
+        div
+        .css('display', 'block')
+        .animate({opacity: 1}, 200);
     });
-    
-    close.click( function(){
-        div 
-        .animate({opacity: 0}, 200, 
-        function(){
-            $(this).css('display', 'none');
-            overlay.fadeOut(400);
-        });
-        let i,
-            comments = document.getElementsByClassName('comments-comment');
-        for (i = comments.length - 1; i >= 0; i--) {
-            comments[i].remove();
-        }
+});
+
+close.click( function(){
+    div
+    .animate({opacity: 0}, 200,
+    function(){
+        $(this).css('display', 'none');
+        overlay.fadeOut(400);
     });
+    let i,
+        comments = document.getElementsByClassName('comments-comment');
+    for (i = comments.length - 1; i >= 0; i--) {
+        comments[i].remove();
+    }
+});
+
+buttonDelete.click(function(){
+    let pub_id = $(".open-photo__photo").attr("id").replace("pub","");
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/pub_delete' + pub_id, true);
+    xhr.send();
+    close.click();
+    let row = document.getElementById('pub48').parentElement.parentElement.parentElement;
+    let addElem = '<div class="col-xl-4" style="text-align: center;">' +
+                '<a href="#" id="add"><img src="/static/icons/plus.png" class="photos__format" style="width: 150px;"></a>' +
+                '</div>';
+    if (row.children.length == 3 && row.children[2].children[0].id != "add"){
+        document.getElementById('pub' + pub_id).parentElement.parentElement.remove();
+        document.getElementById('add').remove();
+        row.insertAdjacentHTML('beforeend', addElem);
+    } else {
+        document.getElementById('pub' + pub_id).parentElement.parentElement.remove();
+    }
 });
 
 $(".logo__like").click(() =>{
@@ -113,25 +132,6 @@ $(".logo__dislike").click(() =>{
     }
 });
 
-$(".logo__delete").click(() =>{
-    let pub_id = $(".open-photo__photo").attr("id").replace("pub","");
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', '/pub_delete' + pub_id, true);
-    xhr.send();
-    $("#openPhoto")
-        .animate({opacity: 0}, 200, 
-        function(){
-            $(this).css('display', 'none');
-            overlay.fadeOut(400);
-        });
-        let i,
-            comments = document.getElementsByClassName('comments-comment');
-        for (i = comments.length - 1; i >= 0; i--) {
-            comments[i].remove();
-        }
-    location.reload(); // Временный костыль
-})
-
 function newComment(login, avatar, text, time){
     return '<div class="comments-comment">' +
             '<a href="/profile_' + login + '">' +
@@ -144,4 +144,4 @@ function newComment(login, avatar, text, time){
                 text
             '</div>' +
         '</div>';
-}
+};

@@ -4,6 +4,7 @@
 <body>
     <div id="modal1" class="modal_div">
         <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
+        <a class="modal_item" href="{{url_for('messages')}}">Сообщения</a>
         <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
     </div>
     <div id="modal2" class="modal_div">
@@ -25,6 +26,17 @@
                     <div class="content_description">
                         {{ user.description }}
                     </div>
+                    {% if current_user != user %}
+                        {% if not user in current_user.subscriptions %}
+                            <button id="{{ user.login }}" class="button_sub btn-dark btn-sub">
+                                Подписаться
+                            </button>
+                        {% else %}
+                            <button id="{{ user.login }}" class="button_sub btn-dark btn-unsub">
+                                Отписаться
+                            </button>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
             <div class="row status_bar">
@@ -74,6 +86,7 @@
             {% endif %}
         </div>
     </section>
+    <script src="/static/js/sub.js"></script>
     {% include '_open_photo.html'%}
     {% include '_footer.html' %}
 </body>
