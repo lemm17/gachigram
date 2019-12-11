@@ -27,6 +27,7 @@ function add_pub(){
                 elemError.style = "display: none;"
             }, 5000);
         } else {
+            document.getElementsByClassName('nums')[0].textContent = Number(document.getElementsByClassName('nums')[0].textContent) + 1;
             let addElem = '<div class="col-xl-4" style="text-align: center;">' +
                     '<a href="#" id="add"><img src="/static/icons/plus.png" class="photos__format" style="width: 150px;"></a>' +
                     '</div>';
@@ -42,108 +43,48 @@ function add_pub(){
             }
         }
         $('.modal_close, #overlay').click();
-        open_modal = $('.publication');
-        overlay = $('.logo__exit'),
-        add = $('#add');
         //---------------Жёсткий костыль---------------------
-        add.click( function(event){
-            let div = $("#modal2")
-            $('#overlay').fadeIn(400,
-            function(){
-                $(div)
-                .css('display', 'block')
-                .animate({opacity: 1, top: '50%'}, 200);
-            });
+        $('#add').unbind('click');
+        $('#add').click( function(event){
+            open_add_window(event);
         });
 
-        open_modal.click( function(event){
-            event.preventDefault();
-            $(".open-photo__photo").attr("src", $(event.target).attr("src"));
-            $(".open-photo__photo").attr("id", $(event.target).attr("id"));
-            let pub_id = $(event.target).attr("id").replace("pub", "");
-            let xhr = new XMLHttpRequest();
-            xhr.open('GET', '/pub_info' + pub_id, true);
-            xhr.send();
-            xhr.onload = () => {
-                let rqst = JSON.parse(xhr.response);
-                document.getElementsByClassName('likes__count')[0].textContent = rqst.count_likes;
-                document.getElementsByClassName('dislikes__count')[0].textContent = rqst.count_dislikes;
-                let like = document.getElementsByClassName('logo__like')[0],
-                    dislike = document.getElementsByClassName('logo__dislike')[0];
-                if (rqst.current_user_like) {
-                    like.src = "/static/icons/like1.png";
-                } else {
-                    like.src = "/static/icons/like.png";
-                }
-                if (rqst.current_user_dislike) {
-                    dislike.src = "/static/icons/dislike1.png";
-                } else {
-                    dislike.src = "/static/icons/dislike.png";
-                }
-
-                $("#pub_user_avatar").attr("src", rqst.user_avatar);
-                $("#pub_user_login").html(rqst.user_login);
-                $("#pub_user").attr("href", window.location.origin + "/profile_" + rqst.user_login);
-                if(rqst.is_current_user){
-                    $(".logo__delete").css("display", "inline")
-                } else {
-                    $(".logo__delete").css("display", "none")
-                }
-
-                // Прогружаем комментарии
-                let commetnsElem = document.getElementsByClassName('comments')[0];
-                rqst.comments.forEach(a => {
-                    commetnsElem.insertAdjacentHTML('beforeend',
-                        newComment(a['login'], a['avatar'], a['comment_text'], a['comment_time']));
-                });
-            }
-            overlay.fadeIn(400,
-            function(){
-                div
-                .css('display', 'block')
-                .animate({opacity: 1}, 200);
-            });
+        $('.publication').unbind('click');
+        $('.publication').click(function(event){
+            open_pub(event);
         });
+
+        close_pub()
         //---------------Жёсткий костыль---------------------
     };
 }
 
 $(document).ready(function() {
-    let overlay = $('#overlay'),
-    open_modal = $('.open_modal'),
-    close = $('.modal_close, #overlay'),
-    modal = $('.modal_div'),
-    add = $('#add');
-    
-    open_modal.click( function(event){
-        let div = $(this).attr('href');
-        overlay.fadeIn(400,
-        function(){
-            $(div) 
-            .css('display', 'block')
-            .animate({opacity: 1, top: '50%'}, 200);
-        });
-    });
+    $('.open_modal').click(
+        function(event){
+            let div = $(this).attr('href');
+            $('#overlay').fadeIn(400,
+            function(){
+                $(div).css('display', 'block').animate({opacity: 1, top: '50%'}, 200);
+            });
+        }
+    );
 
-    add.click( function(event){
-        event.preventDefault();
-        let div = $("#modal2")
-        overlay.fadeIn(400,
-        function(){
-            $(div)
-            .css('display', 'block')
-            .animate({opacity: 1, top: '50%'}, 200);
-        });
+    $('#add').unbind('click');
+    $('#add').click( function(event){
+        open_add_window(event);
     });
     
-    close.click( function(){
-        modal 
-        .animate({opacity: 0, top: '45%'}, 200, 
-        function(){ 
-            $(this).css('display', 'none');
-            overlay.fadeOut(400);
-        });
-    });
+    $('.modal_close, #overlay').click(
+        function(){
+            $('.modal_div').animate({opacity: 0, top: '45%'}, 200,
+                function(){
+                    $(this).css('display', 'none');
+                    $('#overlay').fadeOut(400);
+                }
+            );
+        }
+    );
 });
 
 $("#MorePublicationPlease button").click(() =>{
@@ -154,7 +95,6 @@ $("#MorePublicationPlease button").click(() =>{
         let rqst = JSON.parse(xhr.response),
         last_row = $(".row-lenta");
         last_row = last_row[last_row.length - 1];
-        console.log(rqst);
         let new_pub;
         for(let key in rqst){
             new_pub = '<div class="row row-lenta">' +
@@ -165,61 +105,15 @@ $("#MorePublicationPlease button").click(() =>{
             $(new_pub).insertAfter(last_row);
         }
 
-
-
-
-        //----------------------------- Ещё один жёсткий костыль -----------------------------
-        open_modal = $('.publication');
-        open_modal.click( function(event){
-            event.preventDefault();
-            open_modal = $('.publication');
-            $(".open-photo__photo").attr("src", $(event.target).attr("src"));
-            $(".open-photo__photo").attr("id", $(event.target).attr("id"));
-            let pub_id = $(event.target).attr("id").replace("pub", "");
-            let xhr = new XMLHttpRequest();
-            xhr.open('GET', '/pub_info' + pub_id, true);
-            xhr.send();
-            xhr.onload = () => {
-                let rqst = JSON.parse(xhr.response);
-                document.getElementsByClassName('likes__count')[0].textContent = rqst.count_likes;
-                document.getElementsByClassName('dislikes__count')[0].textContent = rqst.count_dislikes;
-                let like = document.getElementsByClassName('logo__like')[0],
-                    dislike = document.getElementsByClassName('logo__dislike')[0];
-                if (rqst.current_user_like) {
-                    like.src = "/static/icons/like1.png";
-                } else {
-                    like.src = "/static/icons/like.png";
-                }
-                if (rqst.current_user_dislike) {
-                    dislike.src = "/static/icons/dislike1.png";
-                } else {
-                    dislike.src = "/static/icons/dislike.png";
-                }
-
-                $("#pub_user_avatar").attr("src", rqst.user_avatar);
-                $("#pub_user_login").html(rqst.user_login);
-                $("#pub_user").attr("href", window.location.origin + "/profile_" + rqst.user_login);
-                if(rqst.is_current_user){
-                    $(".logo__delete").css("display", "inline")
-                } else {
-                    $(".logo__delete").css("display", "none")
-                }
-
-                // Прогружаем комментарии
-                let commetnsElem = document.getElementsByClassName('comments')[0];
-                rqst.comments.forEach(a => {
-                    commetnsElem.insertAdjacentHTML('beforeend',
-                        newComment(a['login'], a['avatar'], a['comment_text'], a['comment_time']));
-                });
-            }
-            overlay.fadeIn(400,
-            function(){
-                div
-                .css('display', 'block')
-                .animate({opacity: 1}, 200);
-            });
+        $('#add').unbind('click');
+        $('#add').click( function(event){
+            open_add_window(event);
         });
-        //---------------Жёсткий костыль---------------------
+
+        $('.publication').unbind('click');
+        $('.publication').click(function(event){
+            open_pub(event);
+        });
     }
 });
 
@@ -232,3 +126,4 @@ function makeCounter() {
         return currentCount++;
     };
 }
+

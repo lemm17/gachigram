@@ -36,24 +36,28 @@ a:hover { text-decoration: none; }
 }
 .logo__exit:hover {
     opacity: 0.7;
+    transition: all .3s linear;
 }
 .logo__like {
     height: 50px;
 }
 .logo__like:hover {
     opacity: 0.7;
+    transition: all .3s linear;
 }
 .logo__dislike {
     height: 50px;
 }
 .logo__dislike:hover {
     opacity: 0.7;
+    transition: all .3s linear;
 }
 .logo__delete {
     height: 50px;
 }
 .logo__delete:hover {
     opacity: 0.7;
+    transition: all .3s linear;
 }
 .likes__count{
     display: block;
@@ -91,6 +95,7 @@ a:hover { text-decoration: none; }
 }
 .logo__profile:hover {
     opacity: 0.7;
+    transition: all .3s linear;
 }
 .logo__settings {
     height: 30px;
@@ -98,6 +103,7 @@ a:hover { text-decoration: none; }
 }
 .logo__settings:hover {
     opacity: 0.7;
+    transition: all .3s linear;
 }
 .header__search {
     height: 42px;
@@ -160,6 +166,7 @@ a:hover { text-decoration: none; }
 }
 .photos__format:hover {
     opacity: 0.7;
+    transition: all .3s linear;
 }
 
 /* footer */
@@ -219,10 +226,11 @@ a:hover { text-decoration: none; }
 }
 .comment-nickname {
     padding: 5px;
-    border-bottom: 1px solid #2c2c2c;
+    /*border-bottom: 1px solid #2c2c2c;*/
     background-color: #e0e0e0;
 }
 .comment-nickname:hover {
+    transition: all .3s linear;
     opacity: 0.7;
 }
 .comments-text {
@@ -293,6 +301,7 @@ a:hover { text-decoration: none; }
 }
 .login__button:hover {
     opacity: 0.7;
+    transition: all .3s linear;
 }
 .login__button:active {
     opacity: 0.7;
@@ -486,4 +495,32 @@ a:hover { text-decoration: none; }
 .box_hover:hover > .hover_ef {
 	transition: all .3s linear;
 	transform: translateY(60%);
+}
+
+.clearfix {
+    content: '';
+    clear: both;
+    position: relative;
+    display: table;
+    width: 100%;
+    border-bottom: 1px solid #2c2c2c;
+    background-color: #e0e0e0;
+}
+
+.clearfix > a {
+    float: left;
+    width: 91%;
+    display: block;
+}
+
+.clearfix > img {
+    float: left;
+    width: 9%;
+    opacity: 0.1;
+}
+
+.comment-delete:hover {
+    transition: all .3s linear;
+    opacity: 1;
+    cursor: pointer;
 }

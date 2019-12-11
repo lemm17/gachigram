@@ -4,6 +4,11 @@
     <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
 <body>
     {% include '_header.html' %}
+    <div id="modal1" class="modal_div">
+        <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
+        <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
+    </div>
+    <div id="overlay"></div>
     <section style="padding-top: 80px;">
         <div class="container">
             <div class="row" style="margin-bottom: 10px;">

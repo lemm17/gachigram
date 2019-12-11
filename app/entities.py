@@ -218,18 +218,16 @@ class User(UserMixin, db.Model):
         """
         return check_password_hash(self.password_hash, password)
 
-    def create_pub(self, description, content=None):
+    def create_pub(self, description, content):
         """Метод класса User(UserMixin, db.Model)
 
         Позволяет создать публикацию
         :param description: описание публикации
         :param content: ссылка на фото/видео
         """
-        if not content:
-            new_publication = Publication(description=description, id_user=self.id)
-        else:
-            new_publication = Publication(content=content, description=description, id_user=self.id)
+        new_publication = Publication(content=content, description=description, id_user=self.id)
         db.session.add(new_publication)
+        db.session.commit()
 
     def show_pub(self):
         """Метод класса User(UserMixin, db.Model)
@@ -298,8 +296,8 @@ class User(UserMixin, db.Model):
         :param text: текст комментария
         """
         publication = Publication.query.get(id_publication)
-        if publication.author.settings.op_to_com:
-            publication.set_comment(self, text)
+        if publication.author.settings.op_to_com or publication.author == self:
+            comment_id = publication.set_comment(self, text)
             db.session.add(Notification(type='comment',
                                         id_user=publication.author.id,
                                         id_publication=publication.id,
@@ -307,6 +305,7 @@ class User(UserMixin, db.Model):
                                                                                                            id_publication)
                                         ))
             db.session.commit()
+            return comment_id
 
     @classmethod
     def delete_comment(cls, id_comment):
@@ -314,7 +313,7 @@ class User(UserMixin, db.Model):
 
         Метод удаляет комментарий из базы данных
         """
-        Comment.query.filter(Comment.id == id_comment).first().delete()
+        Comment.query.filter(Comment.id == id_comment).delete()
 
     def change_ea(self):
         self.settings.email_alerts_change()
@@ -471,6 +470,7 @@ class Publication(db.Model):
         """
         new_comment = Comment(id_publication=self.id, id_user=user.id, text=text)
         db.session.add(new_comment)
+        return new_comment.id
 
     def show_likes(self):
         """Метод класса Publication(db.Model)
@@ -514,14 +514,16 @@ class Publication(db.Model):
     def count_dislikes(self):
         return len(self.dislikes.all())
 
-    def get_comments(self):
+    def get_comments(self, for_user):
         result = []
         for comment in self.comments:
             result.append({
                 'login': comment.author.login,
                 'avatar': comment.author.avatar,
                 'comment_text': comment.text,
-                'comment_time': comment.time
+                'comment_time': comment.time,
+                'comment_id': comment.id,
+                'op_to_delete': True if comment.author == for_user else False
             })
         return result
 

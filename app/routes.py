@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db
 from app.forms import *
 from flask_login import current_user, login_user, logout_user, login_required
-from app.entities import User, Publication, Settings
+from app.entities import User, Publication, Settings, Comment, datetime
 from werkzeug.urls import url_parse
 from config import S3_BUCKET, S3_KEY, S3_SECRET
 import boto3, json
@@ -201,13 +201,13 @@ def add_publication():
     elif pub.filename[-5:] == '.jpeg':
         expansion = '.jpeg'
     if expansion:
-        current_user.create_pub(description=request.form['description'])
-        key = '{}/{}'.format(current_user.login.lower(), str(current_user.count_publications()) + expansion)
+        key = '{}/{}'.format(current_user.login.lower(), datetime.utcnow().strftime('%B_%d_%Y-%H_%M_%S') + expansion)
         s3.put_object(Body=pub, ACL='public-read', Bucket='lemmycases.ru',
                       Key=key)
-        current_user.get_pubs()[-1].content = "https://s3.eu-north-1.amazonaws.com/lemmycases.ru/{}".format(
-            key)
-        db.session.commit()
+        current_user.create_pub(
+            description=request.form['description'],
+            content="https://s3.eu-north-1.amazonaws.com/lemmycases.ru/{}".format(key)
+        )
         rqst = {
             'ref': current_user.get_pubs()[-1].content,
             'id': current_user.get_pubs()[-1].id
@@ -240,9 +240,10 @@ def pub_info(pub_id):
     user = User.query.filter_by(id=pub.id_user).first()
     response = {
         "publication_date": pub.publication_date,
+        "description": pub.description,
         "count_likes": pub.count_likes(),
         "count_dislikes": pub.count_dislikes(),
-        "comments": pub.get_comments(),
+        "comments": pub.get_comments(current_user),
         "current_user_like": pub.has_like(current_user.id),
         "current_user_dislike": pub.has_dislike(current_user.id),
         "user_login": user.login,
@@ -256,6 +257,12 @@ def pub_info(pub_id):
 @login_required
 @app.route('/pub_delete<pub_id>', methods=['POST'])
 def pub_delete(pub_id):
+    pub_content = Publication.query.get(int(pub_id))
+    pub_content = pub_content.content.split('/')[-2:]
+    key = '{}/{}'.format(pub_content[0], pub_content[1])
+    # example = 'https://s3.eu-north-1.amazonaws.com/lemmycases.ru/kitty/December_11_2019-08_22_21.jpg'
+    s3.delete_object(Bucket='lemmycases.ru',
+                  Key=key)
     current_user.delete_pub(int(pub_id))
     db.session.commit()
     return 'В процессе разработки'
@@ -365,10 +372,25 @@ def MorePublicationPlease(series):
 @login_required
 @app.route('/Comment<pub_id>/<txt>', methods=["GET"])
 def PubComment(pub_id, txt):
-    current_user.create_comment(int(pub_id), txt)
+    comment_id = current_user.create_comment(int(pub_id), txt)
     db.session.commit()
     response = {
         "Login": current_user.login,
-        "Avatar": current_user.avatar
+        "Avatar": current_user.avatar,
+        "id": comment_id
     }
     return jsonify(response)
+
+@login_required
+@app.route('/comment_delete<comment_id>', methods=["GET"])
+def comment_delete(comment_id):
+    comment = Comment.query.get(int(comment_id))
+    if comment.publication.author == current_user or comment.author == current_user:
+        User.delete_comment(comment_id)
+        db.session.commit()
+        return {
+            'msg': 'successfully'
+        }
+    return {
+        'msg': 'unsuccessfully'
+    }

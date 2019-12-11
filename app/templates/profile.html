@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
-{% include '_head.html' %}
-<body>
-    <div id="modal1" class="modal_div">
-        <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
-        <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
-    </div>
+    {% include '_head.html' %}
+    <body>
+        <div id="modal1" class="modal_div">
+            <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
+            <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
+        </div>
     <div id="modal2" class="modal_div">
         <form action="/add_publication" name="form_newPub" method="post" enctype="multipart/form-data">
             <input name="newPub" type="file" accept="image/jpeg,image/png">
