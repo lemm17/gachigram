@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
-from app import app, db
+from app import app, db, socketio
 from app.forms import *
 from flask_login import current_user, login_user, logout_user, login_required
 from app.entities import User, Publication, Settings, Comment, datetime
@@ -394,3 +394,17 @@ def comment_delete(comment_id):
     return {
         'msg': 'unsuccessfully'
     }
+
+@login_required
+@app.route('/chat')
+def sessions():
+    user = current_user
+    return render_template('session.html', user=user)
+
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)
