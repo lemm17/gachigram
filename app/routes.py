@@ -1,9 +1,9 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
-from app import app, db
-# , socketio
+from app import app, db, socketio
 from app.forms import *
 from flask_login import current_user, login_user, logout_user, login_required
 from app.entities import User, Publication, Settings, Comment, datetime
+from app.entities import User, Publication, Settings, Notification
 from werkzeug.urls import url_parse
 from config import S3_BUCKET, S3_KEY, S3_SECRET
 import boto3, json
@@ -24,17 +24,18 @@ def home():
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
     '''
+    notifs = db.session.query(Notification.id, Notification.text, Publication.content).join(Publication,  Publication.id == Notification.id_publication).filter_by(id_user = current_user.id).filter(Notification.read == False).order_by(Notification.id.desc()).all()
     pubs = []
     if current_user.is_authenticated:
         for subscription in current_user.subscriptions:
             for publication in subscription.publications.all():
                 pubs.insert(0, publication)
                 if len(pubs) == 10:
-                    return render_template("home.html", publication=pubs, user=current_user, page='home')
+                    return render_template("home.html", publication=pubs, user=current_user, page='home', notifications_a = notifs)
     else:
         return redirect(url_for('login'))
 
-    return render_template("home.html", publication=pubs, user=current_user, page='home')
+    return render_template("home.html", publication=pubs, user=current_user, page='home', notifications_a = notifs, unread_count = len(notifs))
 
 
 @login_required
@@ -47,10 +48,13 @@ def profile(login):
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
     '''
+    notifs = db.session.query(Notification.id, Notification.text, Publication.content).join(Publication,  Publication.id == Notification.id_publication).filter_by(id_user = current_user.id).filter(Notification.read == False).order_by(Notification.id.desc()).all()
     return render_template("profile.html",
                            user=User.query.filter_by(login=login).first(),
                            indexes=[3 * i - 2 for i in range(1, 1000)],
-                           page='profile'
+                           page='profile',
+                           notifications_a = notifs,
+                           unread_count = len(notifs)
                            )
 
 
@@ -266,7 +270,10 @@ def pub_delete(pub_id):
                      Key=key)
     current_user.delete_pub(int(pub_id))
     db.session.commit()
-    return 'В процессе разработки'
+    response = {
+        'status': 'ok'
+    }
+    return jsonify(response)
 
 
 @login_required
@@ -407,18 +414,18 @@ def change_description():
         'status': 'successfully'
     }
 
-# @login_required
-# @app.route('/chat')
-# def sessions():
-#     user = current_user
-#     return render_template('session.html', user=user)
-#
-#
-# def messageReceived(methods=['GET', 'POST']):
-#     print('message was received!!!')
-#
-#
-# @socketio.on('my event')
-# def handle_my_custom_event(json, methods=['GET', 'POST']):
-#     print('received my event: ' + str(json))
-#     socketio.emit('my response', json, callback=messageReceived)
+@login_required
+@app.route('/chat')
+def sessions():
+    user = current_user
+    return render_template('session.html', user=user)
+
+
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
+
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)

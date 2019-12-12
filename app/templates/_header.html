@@ -4,22 +4,6 @@
             <div class="col-3">
                 <a href="{{ url_for('home') }}"><img src="/static/icons/logo.svg" class="logo__logo"></a>
             </div>
-<!--            <div class="col-4 ml-auto btn-group">-->
-<!--                <button type="button" class="btn btn-dark dropdown-toggle d-block d-sm-none" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-<!--                    Action-->
-<!--                </button>-->
-<!--                <div class="dropdown-menu">-->
-<!--                    <a class="dropdown-item" href="/profile_{{ current_user.login }}">-->
-<!--                        <img src="/static/icons/profile.svg" class="logo__profile">-->
-<!--                    </a>-->
-<!--                    <a class="dropdown-item" href="/chat">-->
-<!--                        <img src="/static/icons/chat.jpg" class="logo_chat">-->
-<!--                    </a>-->
-<!--                    <a href="#modal1" class="open_modal dropdown-item">-->
-<!--                        <img src="/static/icons/settings.svg" class="logo__settings">-->
-<!--                    </a>-->
-<!--                </div>-->
-<!--            </div>-->
             <div class="col-1 ml-auto">
                 <a href="/profile_{{ current_user.login }}">
                     <img src="/static/icons/profile.svg" class="logo__profile">
@@ -29,6 +13,11 @@
                 <a href="/chat">
                     <img src="/static/icons/chat.jpg" class="logo_chat">
                 </a>
+            </div>
+            <div class="col-1">
+                <a href="#"><img src="/static/icons/notif.png" class="logo__notif">
+                    <span id="forAlerts" data-content="{{ unread_count }}">&nbsp;{{ unread_count }}&nbsp;</span></a>
+                {% include '_notifications.html' %}
             </div>
             <div class="col-1">
                 <a href="#modal1" class="open_modal">
