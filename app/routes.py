@@ -2,8 +2,7 @@ from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db, socketio
 from app.forms import *
 from flask_login import current_user, login_user, logout_user, login_required
-from app.entities import User, Publication, Settings, Comment, datetime
-from app.entities import User, Publication, Settings, Notification
+from app.entities import User, Publication, Settings, Comment, datetime, Notification
 from werkzeug.urls import url_parse
 from config import S3_BUCKET, S3_KEY, S3_SECRET
 import boto3, json
@@ -163,13 +162,14 @@ def registration():
 @login_required
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    notifs = db.session.query(Notification.id, Notification.text, Publication.content).join(Publication,  Publication.id == Notification.id_publication).filter_by(id_user = current_user.id).filter(Notification.read == False).order_by(Notification.id.desc()).all()
     '''Рендер html шаблона settings.html
 
     Функция внутри себя принимает имя файла шаблона и переменную, являющуюся
     аргументом шаблона, а затем генерирует указанный html шаблон, заменив его
     заполнители фактическими значениями.
     '''
-    return render_template("settings.html", user=current_user)
+    return render_template("settings.html", user=current_user, notifications_a = notifs, unread_count = len(notifs))
 
 
 @login_required
@@ -342,8 +342,9 @@ def subscribers(user):
     аргументом шаблона, а затем генерирует указанный html шаблон для конкретного 
     пользователя, заменив его заполнители фактическими значениями.
     '''
+    notifs = db.session.query(Notification.id, Notification.text, Publication.content).join(Publication,  Publication.id == Notification.id_publication).filter_by(id_user = current_user.id).filter(Notification.read == False).order_by(Notification.id.desc()).all()
     usr = User.query.filter_by(login=user).first()
-    return render_template('subscribers.html', user=usr, var='subscribers')
+    return render_template('subscribers.html', user=usr, var='subscribers', notifications_a = notifs, unread_count = len(notifs))
 
 
 @login_required
@@ -356,7 +357,8 @@ def subscriptions(user):
     заполнители фактическими значениями.
     '''
     usr = User.query.filter_by(login=user).first()
-    return render_template('subscribers.html', user=usr, var='subscriptions')
+    notifs = db.session.query(Notification.id, Notification.text, Publication.content).join(Publication,  Publication.id == Notification.id_publication).filter_by(id_user = current_user.id).filter(Notification.read == False).order_by(Notification.id.desc()).all()
+    return render_template('subscribers.html', user=usr, var='subscriptions', notifications_a = notifs, unread_count = len(notifs))
 
 
 @login_required
@@ -418,7 +420,8 @@ def change_description():
 @app.route('/chat')
 def sessions():
     user = current_user
-    return render_template('session.html', user=user)
+    notifs = db.session.query(Notification.id, Notification.text, Publication.content).join(Publication,  Publication.id == Notification.id_publication).filter_by(id_user = current_user.id).filter(Notification.read == False).order_by(Notification.id.desc()).all()
+    return render_template('session.html', user=user, notifications_a = notifs, unread_count = len(notifs))
 
 
 def messageReceived(methods=['GET', 'POST']):
@@ -429,3 +432,23 @@ def messageReceived(methods=['GET', 'POST']):
 def handle_my_custom_event(json, methods=['GET', 'POST']):
     print('received my event: ' + str(json))
     socketio.emit('my response', json, callback=messageReceived)
+
+@login_required
+@app.route('/notif_<user_login>', methods=["GET"])
+def Notifications(user_login):
+    notifs1 = db.session.query(Notification.id, Notification.text, Publication.content).join(Publication,  Publication.id == Notification.id_publication).filter_by(id_user = current_user.id).filter(Notification.read == False).order_by(Notification.id.desc()).all()
+    if current_user.login == user_login:
+        notifs = db.session.query(Notification.id, Notification.text, Publication.content).join(Publication,  Publication.id == Notification.id_publication).filter_by(id_user = current_user.id).order_by(Notification.id.desc()).all()
+        return render_template("all_notif.html", notifications = notifs, notifications_a = notifs1, unread_count = len(notifs1))
+    else:
+        return render_template("all_notif.html", notifications = None, notifications_a = notifs1, unread_count = len(notifs1))
+
+@login_required
+@app.route('/notif_read_<notification_id>', methods=["GET"])
+def NotificationRead(notification_id):
+    current_user.read_notification(None)
+    db.session.commit()
+    response = {
+        'status': 'ok'
+    }
+    return jsonify(response)

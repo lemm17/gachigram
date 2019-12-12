@@ -513,11 +513,11 @@ a:hover { text-decoration: none; }
     background-color: red;
 }
 #forAlerts[data-content="0"]{
-    background-color: none;
+    opacity: 0;
 }
 #notifOpen {
     width: 300px;
-    height: 150px;
+    max-height: 150px;
     position: fixed;
     margin-top: 23px;
     right: 110px;
@@ -546,6 +546,8 @@ a:hover { text-decoration: none; }
 }
 #NotificationAll{
     width: 100%;
+}
+
 .clearfix {
     content: '';
     clear: both;

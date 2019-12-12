@@ -356,6 +356,7 @@ class User(UserMixin, db.Model):
                 if notification.id == id_notification:
                     notification.read = True
                     break
+        db.session.commit()
 
     # ---------------------------------------------------
 

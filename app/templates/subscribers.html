@@ -11,6 +11,12 @@
 {% endif %}
 <body>
     {% include '_header.html' %}
+    <div id="modal1" class="modal_div">
+        <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
+        <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
+    </div>
+    <div id="overlay"></div>
+    <div id="temp" class="modal_div"></div>
     <section class="subscribers">
         <div class="container">
             <div class="row">

@@ -1,0 +1,17 @@
+<section id="notifOpen" class="open-notification" style="pointer-events: all;">
+    <div class="container">
+        {% for notification in notifications_a %}
+        <div class="row row-lenta">
+                <div class="col content-middle">
+                        <div class="comments-comment" id="not{{notification.id}}">
+                            {{ notification.text.split(" ")[0] }} <a href="/profile_{{ notification.text.split(' ')[1] }}">{{ notification.text.split(' ')[1] }}</a> {{ ' '.join(notification.text.split(" ")[2::]) }}
+                            <div class="notif_pub">
+                                <img src="{{ notification.content }}" width="15px" height="15px">
+                            </div>
+                        </div>
+                </div>
+        </div>
+        {% endfor %}
+        <button id="NotificationAll"><a href="/notif_{{current_user.login}}"> Показать все </a></button>
+    </div>
+</section>

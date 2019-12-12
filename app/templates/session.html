@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   {% with page = "Чат" %}
     {% include '_head.html' %}
   {% endwith %}
   <body>
+    <div id="modal1" class="modal_div">
+      <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
+      <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
+    </div>
+    <div id="overlay"></div>
+    <div id="temp" class="modal_div"></div>
     {% include '_header.html' %}
     <section class="content">
       <div class="container container_border">
@@ -21,7 +27,6 @@
     </section>
 
 
-    {% include '_footer.html' %}
     <script src="/static/js/socket.io.min.js"></script>
     <script type="text/javascript">
       var socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -56,5 +61,6 @@
         }
       })
     </script>
+    {% include '_footer.html' %}
   </body>
 </html>
