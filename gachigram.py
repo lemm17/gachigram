@@ -1,4 +1,5 @@
-﻿from app import app, db, socketio
+﻿from app import app, db
+# , socketio
 from app.entities import *
 
 

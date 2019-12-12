@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ru">
-{% include '_head.html' %}
+{% with page = "Лента" %}
+    {% include '_head.html' %}
+{% endwith %}
 <body>
     <div id="modal1" class="modal_div">
         <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>

@@ -1,19 +1,36 @@
 <header class="header header_fixed">
     <div class="container">
         <div class="row">
-            <div class="col-xl-3">
+            <div class="col-3">
                 <a href="{{ url_for('home') }}"><img src="/static/icons/logo.svg" class="logo__logo"></a>
             </div>
-            <div class="col-xl-4 ml-auto">
-                <form class="header-form__search">
-                    <button class="button__search" type="submit"></button>
-                    <input class="header__search" type="text" placeholder="Искать здесь...">
-                </form>
+<!--            <div class="col-4 ml-auto btn-group">-->
+<!--                <button type="button" class="btn btn-dark dropdown-toggle d-block d-sm-none" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--                    Action-->
+<!--                </button>-->
+<!--                <div class="dropdown-menu">-->
+<!--                    <a class="dropdown-item" href="/profile_{{ current_user.login }}">-->
+<!--                        <img src="/static/icons/profile.svg" class="logo__profile">-->
+<!--                    </a>-->
+<!--                    <a class="dropdown-item" href="/chat">-->
+<!--                        <img src="/static/icons/chat.jpg" class="logo_chat">-->
+<!--                    </a>-->
+<!--                    <a href="#modal1" class="open_modal dropdown-item">-->
+<!--                        <img src="/static/icons/settings.svg" class="logo__settings">-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="col-1 ml-auto">
+                <a href="/profile_{{ current_user.login }}">
+                    <img src="/static/icons/profile.svg" class="logo__profile">
+                </a>
             </div>
-            <div class="col-xl-1">
-                <a href="/profile_{{ current_user.login }}"><img src="/static/icons/profile.svg" class="logo__profile"></a>
+            <div class="col-1">
+                <a href="/chat">
+                    <img src="/static/icons/chat.jpg" class="logo_chat">
+                </a>
             </div>
-            <div class="col-xl-1">
+            <div class="col-1">
                 <a href="#modal1" class="open_modal">
                     <img src="/static/icons/settings.svg" class="logo__settings">
                 </a>

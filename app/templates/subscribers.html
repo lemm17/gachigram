@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ru">
-{% include '_head.html' %}
+{% if var == 'subscribers' %}
+    {% with page = "Подписчики" %}
+        {% include '_head.html' %}
+    {% endwith %}
+{% else %}
+    {% with page = "Подписки" %}
+        {% include '_head.html' %}
+    {% endwith %}
+{% endif %}
 <body>
     {% include '_header.html' %}
     <section class="subscribers">

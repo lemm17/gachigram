@@ -236,7 +236,6 @@ a:hover { text-decoration: none; }
 .comments-text {
     padding: 5px;
     word-wrap: break-word;
-    word-wrap: break-word;
 }
 
 /* openSettings */
@@ -365,6 +364,7 @@ a:hover { text-decoration: none; }
 
 .settings-elem {
     margin-bottom: 10px;
+    text-align: center !important;
 }
 
 .settings_text {
@@ -523,4 +523,38 @@ a:hover { text-decoration: none; }
     transition: all .3s linear;
     opacity: 1;
     cursor: pointer;
+}
+
+.message_holder, .message_form {
+    text-align: center;
+}
+
+.message_holder {
+    word-wrap: break-word;
+}
+
+.logo_chat {
+    height: 34px;
+    margin-top: 8px;
+}
+
+.ogo_chat:hover, #saveDescription:hover {
+    opacity: 0.7;
+    transition: all .3s linear;
+}
+
+#saveDescription {
+    height: 25px;
+    margin-top: -5px;
+}
+
+#saveDescription:hover {
+    cursor: pointer;
+}
+
+/* Адаптив */
+@media (max-width: 576px) {
+    .logo__logo {
+        height: 40px;
+    }
 }

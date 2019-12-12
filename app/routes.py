@@ -1,5 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify
-from app import app, db, socketio
+from app import app, db
+# , socketio
 from app.forms import *
 from flask_login import current_user, login_user, logout_user, login_required
 from app.entities import User, Publication, Settings, Comment, datetime
@@ -262,7 +263,7 @@ def pub_delete(pub_id):
     key = '{}/{}'.format(pub_content[0], pub_content[1])
     # example = 'https://s3.eu-north-1.amazonaws.com/lemmycases.ru/kitty/December_11_2019-08_22_21.jpg'
     s3.delete_object(Bucket='lemmycases.ru',
-                  Key=key)
+                     Key=key)
     current_user.delete_pub(int(pub_id))
     db.session.commit()
     return 'В процессе разработки'
@@ -381,6 +382,7 @@ def PubComment(pub_id, txt):
     }
     return jsonify(response)
 
+
 @login_required
 @app.route('/comment_delete<comment_id>', methods=["GET"])
 def comment_delete(comment_id):
@@ -396,15 +398,27 @@ def comment_delete(comment_id):
     }
 
 @login_required
-@app.route('/chat')
-def sessions():
-    user = current_user
-    return render_template('session.html', user=user)
+@app.route('/change_description', methods=["POST"])
+def change_description():
+    new_description = request.form.get('description')
+    current_user.description = new_description
+    db.session.commit()
+    return {
+        'status': 'successfully'
+    }
 
-def messageReceived(methods=['GET', 'POST']):
-    print('message was received!!!')
-
-@socketio.on('my event')
-def handle_my_custom_event(json, methods=['GET', 'POST']):
-    print('received my event: ' + str(json))
-    socketio.emit('my response', json, callback=messageReceived)
+# @login_required
+# @app.route('/chat')
+# def sessions():
+#     user = current_user
+#     return render_template('session.html', user=user)
+#
+#
+# def messageReceived(methods=['GET', 'POST']):
+#     print('message was received!!!')
+#
+#
+# @socketio.on('my event')
+# def handle_my_custom_event(json, methods=['GET', 'POST']):
+#     print('received my event: ' + str(json))
+#     socketio.emit('my response', json, callback=messageReceived)

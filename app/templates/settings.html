@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% include '_head.html' %}
+    {% with page = "Настройки" %}
+        {% include '_head.html' %}
+    {% endwith %}
     <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
 <body>
     {% include '_header.html' %}
@@ -50,6 +52,12 @@
                     </form>
                 </div>
                 <div class="col-xl-4 offset-xl-4 settings-elem">
+                    <form action="/change_description" name="changeDescriptionForm">
+                        <input id="description" type="text" name="description" value="{{user.description}}">
+                        <img src="\static\icons\save.png" alt="save" id="saveDescription" onclick="changeDescription(event)">
+                    </form>
+                </div>
+                <div class="col-xl-4 offset-xl-4 settings-elem">
                     <form action="/upload" method="post" class="flex-row" enctype="multipart/form-data">
                         <div class="settings_text">
                             Автар:
@@ -64,5 +72,14 @@
     </section>
     {% include '_footer.html' %}
     <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+    <script type="text/javascript">
+        function changeDescription(event){
+            let formData = new FormData(document.changeDescriptionForm);
+            let newDescription = event.target.previousSibling.value;
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', '/change_description', true);
+            xhr.send(formData);
+        }
+    </script>
 </body>
 </html>

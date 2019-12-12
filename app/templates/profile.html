@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="ru">
-    {% include '_head.html' %}
+    {% with page = "Профиль" %}
+        {% include '_head.html' %}
+    {% endwith %}
     <body>
         <div id="modal1" class="modal_div">
             <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
             <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
         </div>
     <div id="modal2" class="modal_div">
-        <form action="/add_publication" name="form_newPub" method="post" enctype="multipart/form-data">
+        <form action="/add_publication" id="form_newPub" name="form_newPub" method="post" enctype="multipart/form-data">
             <input name="newPub" type="file" accept="image/jpeg,image/png">
             <input id='description' type="text" placeholder="Описание к публикации" name='description'>
             <button type="submit" onclick="add_pub(); return false;">Опубликовать</button>
