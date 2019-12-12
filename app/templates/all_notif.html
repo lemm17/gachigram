@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+{% include '_head.html' %}
+<body>
+    <div id="modal1" class="modal_div">
+        <a class="modal_item" href="{{url_for('settings')}}">Настройки профиля</a>
+        <a class="modal_item" href="{{url_for('logout')}}">Выйти</a>
+    </div>
+    <div id="overlay"></div>
+    <div id="temp" class="modal_div"></div>
+    {% include '_header.html' %}
+    <div id="psevdo" style="height: 72px; margin-bottom: 10px;"></div>
+    <section class="photos">
+        <div class="container container_border">
+                {% for notification in notifications %}
+                <div class="row row-lenta">
+                        <div class="col content-middle">
+                                <div class="comments-comment">
+                                    {{ notification.text.split(" ")[0] }} <a href="/profile_{{ notification.text.split(' ')[1] }}">{{ notification.text.split(' ')[1] }}</a> {{ ' '.join(notification.text.split(" ")[2::]) }}
+                                    <div class="notif_pub">
+                                        <img src="{{ notification.content }}"  width="50px" height="50px">
+                                    </div>
+                                </div>
+                        </div>
+                </div>
+                {% endfor %}
+        </div>
+    </section>
+    {% include '_footer.html' %}
+</body>
+</html>
