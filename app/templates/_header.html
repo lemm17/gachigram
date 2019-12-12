@@ -14,6 +14,11 @@
                 <a href="/profile_{{ current_user.login }}"><img src="/static/icons/profile.svg" class="logo__profile"></a>
             </div>
             <div class="col-xl-1">
+                <a href="#"><img src="/static/icons/notif.png" class="logo__notif">
+                <span id="forAlerts" data-content="{{ unread_count }}">&nbsp;{{ unread_count }}&nbsp;</a>
+                {% include '_notifications.html' %}
+            </div>
+            <div class="col-xl-1">
                 <a href="#modal1" class="open_modal">
                     <img src="/static/icons/settings.svg" class="logo__settings">
                 </a>
